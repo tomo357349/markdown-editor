@@ -1,7 +1,15 @@
 {
   "dependencies": {
-    "angular": "^1.7.9",
-    "marked": "^0.3.19",
-    "mermaid": "^8.4.8"
+    "angular": "^1.8.0",
+    "marked": "^1.1.0",
+    "mermaid": "^8.5.2"
+  },
+  "devDependencies": {
+    "@types/angular": "^1.7.1",
+    "@types/mermaid": "^8.2.1",
+    "http-server": "^0.12.3"
+  },
+  "scripts": {
+    "start": "http-server"
   }
 }
