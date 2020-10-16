@@ -1,3 +1,9 @@
+/*
+<div class="warn"></div>
+```
+some codes...
+```
+*/
 .info + blockquote, .info + p + blockquote { border-color: blue; }
 .warn + blockquote, .warn + p + blockquote { border-color: orange; }
 .error + blockquote, .error + p + blockquote { border-color: red; }
@@ -8,21 +14,35 @@
 	margin-bottom:-5px;
 }
 
-body, div, span, li, p, td, pre, code {
+body, div, span, li, p, td, pre, code, blockquote {
 	font-size: 16px;
-	line-height: 1.3;
+	line-height: 1.5;
 	font-family: "ヒラギノ明朝 ProN W3", "ヒラギノ明朝 ProN", "Hiragino Mincho ProN", serif;
 	font-weight: 300;
+}
+div.reset, .reset span, .reset li, .reset p, .reset td, .reset pre, .reset code {
+	font-size: initial;
+	line-height: revert;
+	font-family: initial;
+	font-weight: initial;
 }
 
 h1, h2, h3, h4, th, dt, button {
 	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", "Roboto", "Segoe UI", sans-serif;
 	font-weight: 400;
 }
+.reset h1, .reset h2, .reset h3, .reset h4, .reset th, .reset dt, .reset button {
+	font-family: initial;
+	font-weight: initial;
+}
 
 h1, h2, h3, h4 {
 	margin: 1em 0 .5em 0;
 	padding: 0;
+}
+.reset h1, .reset h2, .reset h3, .reset h4 {
+	margin: revert;
+	padding: revert;
 }
 
 h1:first-child {
@@ -34,11 +54,21 @@ code {
 	color: #699;
 	font-weight: 100;
 }
+.reset code {
+	font-family: initial;
+	color: revert;
+	font-weight: initial;
+}
 
 a {
 	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", "Roboto", "Segoe UI", sans-serif;
 	font-weight: 100;
 	color: #996;
+}
+.reset a {
+	font-family: initial;
+	font-weight: initial;
+	color: revert;
 }
 
 button {
@@ -48,6 +78,13 @@ button {
 	border: #999 solid 1px;
 	background-color: #ccc;
 }
+.reset button {
+	padding: revert;
+	margin: revert;
+	border-radius: revert;
+	border: revert;
+	background-color: revert;
+}
 
 textarea {
 	padding: 6px;
@@ -55,6 +92,13 @@ textarea {
 	border-radius: 3px;
 	border: #999 solid 1px;
 	background-color: #fff;
+}
+.reset textarea {
+	padding: revert;
+	margin: revert;
+	border-radius: revert;
+	border: revert;
+	background-color: revert;
 }
 
 .main {
@@ -101,9 +145,20 @@ pre {
 	padding: 10px;
 	white-space: pre-wrap;
 }
+.reset pre {
+	border-radius: revert;
+	background-color: revert;
+	padding: revert;
+	white-space: pre-wrap;
+}
+
 pre code {
 	color: #fff;
 }
+.reset pre code {
+	color: revert;
+}
+
 pre.uml {
 	border-left: #699 solid 1px;
 	background-color: #fff;
@@ -116,23 +171,40 @@ blockquote {
 	border-left: #ddd solid 3px;
 	padding-left: 10px;
 }
+.reset blockquote {
+	border-left: revert;
+	padding-left: revert;
+}
 
 table {
 	border: #999 solid 1px;
+}
+.reset table {
+	border: revert;
 }
 
 th,
 td {
 	border: #ccc solid 1px;
 }
+.reset th, .reset td {
+	border: revert;
+}
 
 th {
 	background-color: #ddd;
+}
+.reset th {
+	background-color: revert;
 }
 
 p {
 	margin-top: 0.5em;
 	margin-bottom: 0;
+}
+.reset p {
+	margin-top: revert;
+	margin-bottom: revert;
 }
 
 h1 {
@@ -140,15 +212,28 @@ h1 {
 	color: #345180;
 	border-bottom: #345180 solid 2px;
 }
+.reset h1 {
+	font-size: revert;
+	color: revert;
+	border-bottom: revert;
+}
 
 h2 {
 	font-size: 1.8em;
 	color: #5D7291;
 }
+.reset h2 {
+	font-size: revert;
+	color: revert;
+}
 
 h3 {
 	font-size: 1.5em;
 	color: #497E93;
+}
+.reset h3 {
+	font-size: revert;
+	color: revert;
 }
 
 ol,
@@ -159,9 +244,19 @@ ul {
 	-webkit-margin-end: 0;
 	-webkit-padding-start: 2em;
 }
+.reset ol, .reset ul {
+	-webkit-margin-before: revert;
+	-webkit-margin-after: revert;
+	-webkit-margin-start: revert;
+	-webkit-margin-end: revert;
+	-webkit-padding-start: revert;
+}
 
 li {
 	position: relative;
+}
+.reset li {
+	position: revert;
 }
 
 li > p {
@@ -193,6 +288,22 @@ ul > li.done::before {
 	top: -0.5em;
 	font-size: 200%;
 	content: '\2611';
+}
+
+ul.toc > li {
+	list-style-type: none;
+}
+
+ul.toc > li.depth1 {
+	padding-left: 0em;
+}
+
+ul.toc > li.depth2 {
+	padding-left: 2em;
+}
+
+ul.toc > li.depth3 {
+	padding-left: 4em;
 }
 
 #clippedimg {
@@ -231,6 +342,9 @@ ul > li.done::before {
 
 img {
 	width: 80%;
+}
+.reset img {
+	width: revert;
 }
 
 h1 {

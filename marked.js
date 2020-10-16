@@ -987,8 +987,8 @@ Parser.prototype.toc = function () {
 
   var toc = [];
   var headings = this.tokens.filter(function (token) {
-    return token.type === 'heading';
-  });
+    return token.type === 'heading' && token.depth < 4;
+  }).reverse();
   toc.push('<h1>TOC</h1>');
   toc.push('<ul class="toc">');
   headings.forEach(function (h) {
