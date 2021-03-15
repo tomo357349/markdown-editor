@@ -38,13 +38,21 @@ ngapp.controller('MainController', ['$scope', '$sce', '$timeout', function ($sco
 	$scope.model = {
 		toc: true,
 		todo: true,
-		md: '# markdown text\n## link\n[google](http://www.google.com)\n\n## todo\n- xxx\n+ yyy\n\n## table\n|id|name|\n|-:|----|\n|1|Taro|\n\n## blockquote\n> Note: aaa\n\n## code\n```js\nvar x = 0;\nconsole.log(x);\n```\n\n## uml\nflowchart\n```uml\ngraph LR\nA[Start] --> B{Decision}\nB -->|false| C[/Execute/]\nB -->|true| D[/Stop/]\n```\n\n```uml\ngraph TB\nStart --> Stop\n```\nclass diagram\n```uml\nclassDiagram\nclassA <|-- classB : implements\nclassC *-- classD : composition\nclassE o-- classF : association\nCustomer "1" --> "*" Ticket\n```\n\nsequence diagram\n```uml\nsequenceDiagram\nAlice->>+John: Hello John, how are you?\nJohn-->>-Alice: Great!\n```\n\nstate diagram\n```uml\nstateDiagram\n[*] --> s1\ns1 --> s2: A transition\ns2 --> [*]\n```\n\n```uml\ngantt\ntitle A Gantt Diagram\ndateFormat YYYY-MM-DD\nsection Section\nA task:done, a1, 2020-01-01, 30d\nAnother task:after a1, 20d\nsection Section2\nTask in sec:crit, s2t1, 2020-01-12, 12d\nsecond task:active, 24d\nclick s2t1 call printTask("x")```\n\n',
+		vw: 5,
+		md: '# markdown text\n## link\n[google](http://www.google.com)\n\n## todo\n- xxx\n+ yyy\n\n## table\n|id|name|\n|-:|----|\n|1|Taro|\n\n## blockquote\n> Note: aaa\n\n## code\n```js\nvar x = 0;\nconsole.log(x);\n```\n\n## uml\nflowchart\n```uml\ngraph LR\nA[Start] --> B{Decision}\nB -->|false| C[/Execute/]\nB -->|true| D[/Stop/]\n```\n\n```uml\ngraph TB\nStart --> Stop\n```\nclass diagram\n```uml\nclassDiagram\nclassA <|-- classB : implements\nclassC *-- classD : composition\nclassE o-- classF : association\nCustomer "1" --> "*" Ticket\n```\n\nsequence diagram\n```uml\nsequenceDiagram\nAlice->>+John: Hello John, how are you?\nJohn-->>-Alice: Great!\n```\n\nstate diagram\n```uml\nstateDiagram\n[*] --> s1\ns1 --> s2: A transition\ns2 --> [*]\n```\n\n```uml\ngantt\ntitle A Gantt Diagram\ndateFormat YYYY-MM-DD\nsection Section\nA task:done, a1, 2020-01-01, 30d\nAnother task:after a1, 20d\nsection Section2\nTask in sec:crit, s2t1, 2020-01-12, 12d\nsecond task:active, 24d\nclick s2t1 call printTask("x")```\n\n# flowchart\n\n```flow\nst=>start: START\ne=>end: END\nio1=>inputoutput: Stdin\ncond=>condition: isBlank?\nsub1=>subroutine: func1\nop1=>operation: i++\nst->io1->cond\ncond(yes)->sub1->e\ncond(no)->op1->e\n```\n\n<!--```latex\n\\sum_{i=1}^{n} x_i\n```-->\n\n',
 		images: [
 			dummyimg
 		],
 		html: ''
 	};
 
+	$scope.changeViewWidth = function () {
+		var i = $scope.model.vw * 10;
+		var s = i + '%';
+		var t = (100 - i) + '%';
+		document.getElementById('text').style.minWidth = s;
+		document.getElementById('ctrl').style.minWidth = t;
+	};
 	$scope.changed = function () {
 		var toc = $scope.model.toc;
 		var todo = $scope.model.todo;
@@ -52,13 +60,33 @@ ngapp.controller('MainController', ['$scope', '$sce', '$timeout', function ($sco
 		var markedhtml = marked(md, { toc, todo });
 		markedhtml = appendimage(markedhtml);
 		$scope.model.html = $sce.trustAsHtml(markedhtml);
+
+		setTimeout(function () {
+			LatexIT.render('code');
+		}, 100);
+
 		setTimeout(function () {
 			mermaid.init(undefined, ".lang-uml");
+
+			var flownum = 0;
+			document.querySelectorAll('.lang-flow').forEach(function (el) {
+				el.id = 'flow' + (flownum++);
+				var txt = el.innerText;
+				el.innerText = '';
+				var f = flowchart.parse(txt);
+				f.drawSVG(el.id, {
+					"line-width": 1,
+					'scale': 1.0,
+					"fill": "#fff"
+				});
+			});
 		}, 100);
 	};
 
 	$scope.loaded = function (res) {
-		res.forEach(function (d) {
+		res.sort(function (a, b) {
+			return a.name < b.name ? -1 : a.name > b.name ? 1 : res.indexOf(b) - res.indexOf(a);
+		}).forEach(function (d) {
 			$scope.model.images.push(d);
 			if ($scope.model.images.indexOf(dummyimg) > -1) {
 				$scope.model.images.splice(0, 1);

@@ -8,11 +8,30 @@
 	<title>markdown editor</title>
 
 	<link rel="icon" type="image/x-icon" href="favicon.ico?v=0.1" />
-	<link rel="stylesheet" type="text/css" href="index.css?v=0.97" />
-	<script src="./node_modules/angular/angular.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="index.css?v=0.106" />
+	<link rel="stylesheet" type="text/css" href="fa/css/all.css" />
+	<style>
+		th, td {
+			min-width: 3em;
+		}
+		.newpage {
+			page-break-before: always;
+		}
+		pre.cs,
+		pre.csharp {
+			background: no-repeat top 14px right 6px/22px url('./img/csharp.png') #699;
+		}
+
+	</style>
+	<script src="./latexit.js"></script>
+	<!--<script src="./node_modules/angular/angular.min.js"></script>-->
 	<!--<script src="./node_modules/marked/lib/marked.js"></script>-->
+	<script src="./angular.min.js"></script>
 	<script src="./marked.js"></script>
 	<script src="./node_modules/mermaid/dist/mermaid.min.js"></script>
+	<!--<script src="./mermaid.min.js"></script>-->
+	<script src="./raphael.js"></script>
+	<script src="./flowchart.js"></script>
 </head>
 
 <body ng-app="example-app" ng-controller="MainController" class="main">
@@ -21,12 +40,13 @@
 			style="flex: 2;"
 			ondblclick="window.hiddenView=!window.hiddenView;document.getElementById('text').style='display:'+((hiddenView)?'none':'flex')+';';"></textarea>
 		<div>
+			<label for="vw">view width </label><input type="number" id="vw" ng-model="model.vw" ng-change="changeViewWidth()" min="0" max="10" /><br>
 			<input type="checkbox" id="toc" ng-model="model.toc" ng-change="changed()" /><label for="toc">show table of
 				contents</label><br>
 			<input type="checkbox" id="todo" ng-model="model.todo" ng-change="changed()" /><label for="todo">use todo
-				list</label>
-		</div>
-		<div id="imgs" drop-file="loaded" ng-model="model.img" style="flex: 1;">
+				list</label><br>
+			</div>
+		<div id="imgs" drop-file="loaded" ng-model="model.img" style="flex: 1;max-height: 100px;overflow-y: auto;">
 			<div ng-repeat="img in model.images">
 				{{ img.name }} <a ng-if="img.data" ng-click="clipimage($event, img)">copy</a> <a
 					ng-if="img.data" ng-click="dropimage($event, img)">x</a>
