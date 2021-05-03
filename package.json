@@ -1,6 +1,9 @@
 {
   "dependencies": {
     "angular": "^1.8.0",
+    "chart.js": "^3.1.1",
+    "chartjs-plugin-labels": "^1.1.0",
+    "d3": "^6.7.0",
     "latex.js": "^0.12.4",
     "marked": "^1.1.0",
     "mermaid": "^8.8.1"

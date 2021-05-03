@@ -146,6 +146,26 @@ textarea {
 	display: flex;
 }
 
+.d3tree-link {
+	fill: none;
+	stroke: #666;
+}
+.d3tree-node rect {
+	fill: none;
+	stroke: #000;
+}
+.d3tree-node.mark rect {
+	fill: rgba(255, 189, 189, .5);
+	stroke: #600;
+}
+.d3tree-node text {
+	fill: #000;
+	font-family: 'Ricty Diminished', Ricty, Consolas, 'Courier New', Courier, Monaco, monospace;
+}
+.d3tree-node.mark text {
+	fill: #600;
+}
+
 pre {
 	border-radius: 6px;
 	background-color: #699;

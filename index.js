@@ -39,7 +39,7 @@ ngapp.controller('MainController', ['$scope', '$sce', '$timeout', function ($sco
 		toc: true,
 		todo: true,
 		vw: 5,
-		md: '# markdown text\n## link\n[google](http://www.google.com)\n\n## todo\n- xxx\n+ yyy\n\n## table\n|id|name|\n|-:|----|\n|1|Taro|\n\n## blockquote\n> Note: aaa\n\n## code\n```js\nvar x = 0;\nconsole.log(x);\n```\n\n## uml\nflowchart\n```uml\ngraph LR\nA[Start] --> B{Decision}\nB -->|false| C[/Execute/]\nB -->|true| D[/Stop/]\n```\n\n```uml\ngraph TB\nStart --> Stop\n```\nclass diagram\n```uml\nclassDiagram\nclassA <|-- classB : implements\nclassC *-- classD : composition\nclassE o-- classF : association\nCustomer "1" --> "*" Ticket\n```\n\nsequence diagram\n```uml\nsequenceDiagram\nAlice->>+John: Hello John, how are you?\nJohn-->>-Alice: Great!\n```\n\nstate diagram\n```uml\nstateDiagram\n[*] --> s1\ns1 --> s2: A transition\ns2 --> [*]\n```\n\n```uml\ngantt\ntitle A Gantt Diagram\ndateFormat YYYY-MM-DD\nsection Section\nA task:done, a1, 2020-01-01, 30d\nAnother task:after a1, 20d\nsection Section2\nTask in sec:crit, s2t1, 2020-01-12, 12d\nsecond task:active, 24d\nclick s2t1 call printTask("x")```\n\n# flowchart\n\n```flow\nst=>start: START\ne=>end: END\nio1=>inputoutput: Stdin\ncond=>condition: isBlank?\nsub1=>subroutine: func1\nop1=>operation: i++\nst->io1->cond\ncond(yes)->sub1->e\ncond(no)->op1->e\n```\n\n<!--```latex\n\\sum_{i=1}^{n} x_i\n```-->\n\n',
+		md: '# markdown text\n## link\n[google](http://www.google.com)\n\n## todo\n- xxx\n+ yyy\n\n## table\n|id|name|\n|-:|----|\n|1|Taro|\n\n## blockquote\n> Note: aaa\n\n## code\n```js\nvar x = 0;\nconsole.log(x);\n```\n\n## uml\nflowchart\n```uml\ngraph LR\nA[Start] --> B{Decision}\nB -->|false| C[/Execute/]\nB -->|true| D[/Stop/]\n```\n\n```uml\ngraph TB\nStart --> Stop\n```\nclass diagram\n```uml\nclassDiagram\nclassA <|-- classB : implements\nclassC *-- classD : composition\nclassE o-- classF : association\nCustomer "1" --> "*" Ticket\n```\n\nsequence diagram\n```uml\nsequenceDiagram\nAlice->>+John: Hello John, how are you?\nJohn-->>-Alice: Great!\n```\n\nstate diagram\n```uml\nstateDiagram\n[*] --> s1\ns1 --> s2: A transition\ns2 --> [*]\n```\n\n```uml\ngantt\ntitle A Gantt Diagram\ndateFormat YYYY-MM-DD\nsection Section\nA task:done, a1, 2020-01-01, 30d\nAnother task:after a1, 20d\nsection Section2\nTask in sec:crit, s2t1, 2020-01-12, 12d\nsecond task:active, 24d\nclick s2t1 call printTask("x")```\n\n```uml\nerDiagram\nCUSTOMER ||--o{ ORDER : places\nORDER ||--|{ LINE-ITEM : contains\nCUSTOMER }|..|{ DELIVERY-ADDRESS : uses```\n\n# flowchart\n\n```flow\nst=>start: START\ne=>end: END\nio1=>inputoutput: Stdin\ncond=>condition: isBlank?\nsub1=>subroutine: func1\nop1=>operation: i++\nst->io1->cond\ncond(yes)->sub1->e\ncond(no)->op1->e\n```\n\n# chart\n\n```chart\n{\n	"type": "bar",\n	"data": {\n		"labels": ["Red", "Blue"],\n		"datasets": [\n			{\n				"label": "# of Votes",\n				"data": [12, 3],\n				"backgroundColor": ["rgba(255, 99, 132, 0.2)","rgba(54, 162, 235, 0.2)"],\n				"borderColor": ["rgba(255, 99, 132, 1)","rgba(54, 162, 235, 1)"],\n				"borderWidth": 1\n			}\n		]\n	},\n	"options": {\n		"scales": {\n			"y": {"beginAtZero": true}\n		}\n	}\n}\n```\n\n```chart\n{\n	"type": "line",\n	"data": {\n		"labels": ["Jan", "Feb", "Mar", "Apr"],\n		"datasets": [\n			{\n				"label": "My First Dataset",\n				"data": [65, 59, 80, 81],\n				"fill": false,\n				"borderColor": "rgb(75, 192, 192)",\n				"tension": 0.1\n			}\n		]\n	}\n}\n```\n\n```chart\n{\n	"type": "doughnut",\n	"data": {\n		"labels": [\n			"Red",\n			"Blue",\n			"Yellow"\n		],\n		"datasets": [{\n			"label": "My First Dataset",\n			"data": [300, 50, 100],\n			"backgroundColor": [\n			"rgb(255, 99, 132)",\n			"rgb(54, 162, 235)",\n			"rgb(255, 205, 86)"\n			],\n			"hoverOffset": 4\n		}]\n	},\n    "options": {\n        "responsive": true,\n		"plugins": {\n			"legend": {\n				"position": "right"\n			},\n			"title": {\n				"display": true,\n				"text": "Doughnut Chart"\n			}\n		}\n	}\n}\n```\n\n# tree\n\n```tree\n{\n  "opts": {\n    "space": {\n      "pad": 20,\n      "w": 100,\n      "h": 30\n    },\n    "rect": {\n      "w": 80,\n      "h": 20\n    }\n  },\n  "data": {\n    "(root)": {\n      "opt": {},\n      "usr": {\n        "bin": {},\n        "lib@mark": {\n          "cron": {},\n          "zsh": {}\n        },\n        "local": {\n          "bin": {}\n        },\n        "sbin": {}\n      }\n    }\n  }\n}\n```\n\n<!--```latex\n\\sum_{i=1}^{n} x_i\n```-->\n\n',
 		images: [
 			dummyimg
 		],
@@ -67,6 +67,34 @@ ngapp.controller('MainController', ['$scope', '$sce', '$timeout', function ($sco
 
 		setTimeout(function () {
 			mermaid.init(undefined, ".lang-uml");
+
+			document.querySelectorAll('.lang-tree').forEach(function (el) {
+				try {
+					var o = JSON.parse(el.innerText);
+					// var svg = document.createElement('svg');
+					// svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+					// svg.setAttribute('viewBox', '0 0 400 400');
+					var pre = el.parentNode;
+					var rootel = el.parentNode.parentNode;
+					var svg = d3.select(rootel).append('svg');
+	
+					drawTreeView(svg, o.data, o.opts);
+					console.log(svg.node());
+					rootel.replaceChild(svg.node(), pre);
+				} catch (err) {
+					console.error(err);
+				}
+			});
+			document.querySelectorAll('.lang-chart').forEach(function (el) {
+				var o = JSON.parse(el.innerText);
+				var canvas = document.createElement('canvas');
+				var pre = el.parentNode;
+				var rootel = el.parentNode.parentNode;
+				rootel.replaceChild(canvas, pre);
+				var ctx = canvas.getContext('2d');
+
+				var myChart = new Chart(ctx, o);
+			});
 
 			var flownum = 0;
 			document.querySelectorAll('.lang-flow').forEach(function (el) {
@@ -277,3 +305,236 @@ ngapp.directive('dropFile', ['$timeout', function ($timeout) {
 		}
 	};
 }]);
+
+function drawTreeView(svg, data, opts) {
+	opts = opts || {};
+	opts.rect = opts.rect || {
+		w: 80,
+		h: 20
+	};
+	opts.space = opts.space || {
+		pad: 20,
+		w: 100,
+		h: 30
+	};
+	/*
+	{
+		raw: true,
+		w: 0,
+		h: 0,
+		// 描画する四角（ノード）のサイズ
+		rect: {
+			w: 80,
+			h: 20
+		},
+		// ノード間のスペースなど
+		space: {
+			pad: 20,
+			w: 100,
+			h: 30
+		}
+	}*/
+
+	/*
+	// データ
+	{
+		"(root)": {
+			"opt": {},
+			"usr": {
+				"bin": {},
+				"lib@mark": {
+					"cron": {},
+					"zsh": {}
+				},
+				"local": {
+					"bin": {}
+				},
+				"sbin": {}
+			}
+		}
+	};*/
+
+	/*
+	var data = {
+		name: "(root)",
+		children: [
+			{
+				name: "opt"
+			},
+			{
+				name: "usr",
+				children: [
+					{
+						name: "bin"
+					},
+					{
+						name: "lib",
+						class: "mark",
+						children: [
+							{ name: "cron" }, { name: "zsh" }
+						]
+					},
+					{
+						name: "local",
+						children: [
+							{ name: "bin" }
+						]
+					},
+					{
+						name: "sbin"
+					},
+				],
+			}
+		]
+	};*/
+
+	function convertRawData(raw) {
+		if (!raw) return;
+
+		return Object.keys(raw).map(function (k) {
+			var token = k.split('@');
+			var o = {
+				name: token[0],
+				class: token[1]
+			};
+			var children = convertRawData(raw[k]);
+			if (children && children.length) o.children = children;
+			return o;
+		});
+	}
+
+	if (!opts.raw) data = convertRawData(data)[0];
+
+	// ツリー用データ設定
+	var root = d3.hierarchy(data);
+	var tree = d3.tree();
+	// treeレイアウトのためのx, y座標をデータに付与してくれる
+	tree(root);
+	// それぞれのノードが持つ末端ノードの数を算出して、"value"というキー名でノードのデータに付与
+	root.count();
+	// console.log(root);
+
+	// 全体svg要素の高さと幅を計算し生成
+	// 末端ノードの数 * ノードの高さ + (末端ノードの数 - 1) * (ノードの基準点どうしの縦幅 - ノードの高さ) + 上下の余白
+	var height = opts.h || (root.value * opts.rect.h +
+		(root.value - 1) * (opts.space.h - opts.rect.h) +
+		opts.space.pad * 2);
+	// (rootの高さ + 1) * ノードの幅 + rootの高さ * (ノードの基準点どうしの横幅 - ノードの幅) + 上下の余白
+	// 最終的に90度回転した状態になるためrootの存在する高さで横幅を計算する
+	var width = opts.w || ((root.height + 1) * opts.rect.w +
+		root.height * (opts.space.w - opts.rect.w) +
+		opts.space.pad * 2);
+
+	svg.attr('width', width).attr('height', height);
+
+	// 渡されたnameを含む階層階層を探索（同じparentの）
+	function seekParent(d, name) {
+		// 今処理しているノードの親の子たちを取得することでその階層のデータを取得
+		var siblings = d.parent.children;
+		// 取得した階層に、今探しているnameを含むものがいれば、それが目的の階層
+		var target = siblings.find(function (d) {
+			return d.data.name == name;
+		});
+		// 見つかればその階層をnameとセットで返却
+		// 見つからなければ親を渡して再帰処理させることで一つ上の階層を探索させる
+		return target ? { name: name, hierarchy: siblings } : seekParent(d.parent, name);
+	}
+
+	// 自分より上にいる末端ノードの数を配列として取り出す
+	function calcLeaves(names, d) {
+		// 親の含まれる階層をそれぞれ抽出する（nameと階層のJSONで）
+		var eachHierarchies = names.map(function (name) {
+			return seekParent(d, name)
+		});
+		// それぞれの階層における、そのnameの位置（インデックス）を取得
+		var eachIdxes = eachHierarchies.map(function (item) {
+			return item.hierarchy.findIndex(function (contents) {
+				return contents.data.name == item.name;
+			});
+		});
+		// 先ほど取得したインデックスを使って、それぞれの階層をスライスする
+		var filteredHierarchies = eachHierarchies.map(function (item, idx) {
+			return item.hierarchy.slice(0, eachIdxes[idx]);
+		});
+		// それぞれの階層に含まれるvalueを抽出
+		var values = filteredHierarchies.map(function (hierarchy) {
+			return hierarchy.map(function (item) {
+				return item.value;
+			});
+		});
+		// 平坦化して返却
+		return values.flat();
+	}
+
+	// y座標の計算
+	function defineY(data, spc) {
+		// 親をたどる配列からバインドされたデータを抽出
+		const ancestorValues = data.ancestors().map(function (item) {
+			return item.data.name;
+		});
+		// 自分より上にいる末端ノードの数を配列として取り出す
+		const leaves = calcLeaves(ancestorValues.slice(0, ancestorValues.length - 1), data);
+		// ノードの数を合計
+		const sumLeaves = leaves.reduce(function (previous, current) {
+			return previous + current;
+		}, 0);
+		// y座標を計算 末端ノードの数 * ノードの基準点同士の縦幅 + 上の余白
+		return sumLeaves * spc.h + spc.pad;
+	}
+
+	// 位置決め
+	function definePos(treeData, spc) {
+		treeData.each(function (d) {
+			// x座標は 深さ * ノード間の幅 + 左側の余白
+			d.x = d.depth * spc.w + spc.pad;
+			d.y = defineY(d, spc);
+		});
+	}
+
+	definePos(root, opts.space);
+
+	// 全体をグループ化
+	var g = svg.append('g');
+
+	// path要素の追加
+	g.selectAll('.d3tree-link')
+		.data(root.descendants().slice(1))
+		.enter()
+		.append('path')
+		.attr('class', 'd3tree-link')
+		.attr('d', function (d) {
+			var p = 'M' + d.x + ',' + d.y + 'L' + (d.parent.x + opts.rect.w + (opts.space.w - opts.rect.w) / 2) + ',' + (d.y) + ' ' + (d.parent.x + opts.rect.w + (opts.space.w - opts.rect.w) / 2) + ',' + (d.parent.y) + ' ' + (d.parent.x + opts.rect.w) + ',' + d.parent.y;
+			return p;
+			//	.replace(/\r?\n/g, '')
+			//	.replace(/\s+/g, ' ');
+		})
+		.attr('transform', function (d) {
+			return 'translate(0, ' + (opts.rect.h / 2) + ')';
+		});
+
+	// 各ノード用グループの作成
+	g.selectAll('.d3tree-node')
+		.data(root.descendants())
+		.enter()
+		.append('g')
+		.attr('class', function (d) {
+			return (d.data.class ? d.data.class + ' ' : '') + 'd3tree-node';
+		})
+		.attr('transform', function (d) {
+			return 'translate(' + d.x + ', ' + d.y + ')';
+		})
+		.call(function (me) {
+			// 四角
+			me.append('rect')
+				.attr('width', opts.rect.w)
+				.attr('height', opts.rect.h);
+		})
+		.call(function (me) {
+			// テキスト
+			me.append('text')
+				.text(function (d) {
+					return d.data.name;
+				})
+				.attr('transform', 'translate(5, 15)');
+		});
+}
