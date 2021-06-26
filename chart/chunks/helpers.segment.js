@@ -1,5 +1,5 @@
 /*!
- * Chart.js v3.1.1
+ * Chart.js v3.3.2
  * https://www.chartjs.org
  * (c) 2021 Chart.js Contributors
  * Released under the MIT License
@@ -220,6 +220,17 @@ function _capitalize(str) {
 }
 const defined = (value) => typeof value !== 'undefined';
 const isFunction = (value) => typeof value === 'function';
+const setsEqual = (a, b) => {
+  if (a.size !== b.size) {
+    return false;
+  }
+  for (const item of a) {
+    if (!b.has(item)) {
+      return false;
+    }
+  }
+  return true;
+};
 
 const PI = Math.PI;
 const TAU = 2 * PI;
@@ -313,7 +324,7 @@ function _angleDiff(a, b) {
 function _normalizeAngle(a) {
   return (a % TAU + TAU) % TAU;
 }
-function _angleBetween(angle, start, end) {
+function _angleBetween(angle, start, end, sameAngleIsFullCircle) {
   const a = _normalizeAngle(angle);
   const s = _normalizeAngle(start);
   const e = _normalizeAngle(end);
@@ -321,7 +332,8 @@ function _angleBetween(angle, start, end) {
   const angleToEnd = _normalizeAngle(e - a);
   const startToAngle = _normalizeAngle(a - s);
   const endToAngle = _normalizeAngle(a - e);
-  return a === s || a === e || (angleToStart > angleToEnd && startToAngle < endToAngle);
+  return a === s || a === e || (sameAngleIsFullCircle && s === e)
+    || (angleToStart > angleToEnd && startToAngle < endToAngle);
 }
 function _limitValue(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -1749,19 +1761,25 @@ function createSubResolver(parentScopes, resolver, prop, value) {
       return false;
     }
   }
-  return _createResolver([...set], [''], rootScopes, fallback, () => {
-    const parent = resolver._getTarget();
-    if (!(prop in parent)) {
-      parent[prop] = {};
-    }
-    return parent[prop];
-  });
+  return _createResolver([...set], [''], rootScopes, fallback,
+    () => subGetTarget(resolver, prop, value));
 }
 function addScopesFromKey(set, allScopes, key, fallback) {
   while (key) {
     key = addScopes(set, allScopes, key, fallback);
   }
   return key;
+}
+function subGetTarget(resolver, prop, value) {
+  const parent = resolver._getTarget();
+  if (!(prop in parent)) {
+    parent[prop] = {};
+  }
+  const target = parent[prop];
+  if (isArray(target) && isObject(value)) {
+    return value;
+  }
+  return target;
 }
 function _resolveWithPrefixes(prop, prefixes, scopes, proxy) {
   let value;
@@ -1804,6 +1822,7 @@ function resolveKeysFromAllScopes(scopes) {
 
 const EPSILON = Number.EPSILON || 1e-14;
 const getPoint = (points, i) => i < points.length && !points[i].skip && points[i];
+const getValueAxis = (indexAxis) => indexAxis === 'x' ? 'y' : 'x';
 function splineCurve(firstPoint, middlePoint, afterPoint, t) {
   const previous = firstPoint.skip ? middlePoint : firstPoint;
   const current = middlePoint;
@@ -1852,9 +1871,10 @@ function monotoneAdjust(points, deltaK, mK) {
     mK[i + 1] = betaK * tauK * deltaK[i];
   }
 }
-function monotoneCompute(points, mK) {
+function monotoneCompute(points, mK, indexAxis = 'x') {
+  const valueAxis = getValueAxis(indexAxis);
   const pointsLen = points.length;
-  let deltaX, pointBefore, pointCurrent;
+  let delta, pointBefore, pointCurrent;
   let pointAfter = getPoint(points, 0);
   for (let i = 0; i < pointsLen; ++i) {
     pointBefore = pointCurrent;
@@ -1863,20 +1883,22 @@ function monotoneCompute(points, mK) {
     if (!pointCurrent) {
       continue;
     }
-    const {x, y} = pointCurrent;
+    const iPixel = pointCurrent[indexAxis];
+    const vPixel = pointCurrent[valueAxis];
     if (pointBefore) {
-      deltaX = (x - pointBefore.x) / 3;
-      pointCurrent.cp1x = x - deltaX;
-      pointCurrent.cp1y = y - deltaX * mK[i];
+      delta = (iPixel - pointBefore[indexAxis]) / 3;
+      pointCurrent[`cp1${indexAxis}`] = iPixel - delta;
+      pointCurrent[`cp1${valueAxis}`] = vPixel - delta * mK[i];
     }
     if (pointAfter) {
-      deltaX = (pointAfter.x - x) / 3;
-      pointCurrent.cp2x = x + deltaX;
-      pointCurrent.cp2y = y + deltaX * mK[i];
+      delta = (pointAfter[indexAxis] - iPixel) / 3;
+      pointCurrent[`cp2${indexAxis}`] = iPixel + delta;
+      pointCurrent[`cp2${valueAxis}`] = vPixel + delta * mK[i];
     }
   }
 }
-function splineCurveMonotone(points) {
+function splineCurveMonotone(points, indexAxis = 'x') {
+  const valueAxis = getValueAxis(indexAxis);
   const pointsLen = points.length;
   const deltaK = Array(pointsLen).fill(0);
   const mK = Array(pointsLen);
@@ -1890,8 +1912,8 @@ function splineCurveMonotone(points) {
       continue;
     }
     if (pointAfter) {
-      const slopeDeltaX = (pointAfter.x - pointCurrent.x);
-      deltaK[i] = slopeDeltaX !== 0 ? (pointAfter.y - pointCurrent.y) / slopeDeltaX : 0;
+      const slopeDelta = pointAfter[indexAxis] - pointCurrent[indexAxis];
+      deltaK[i] = slopeDelta !== 0 ? (pointAfter[valueAxis] - pointCurrent[valueAxis]) / slopeDelta : 0;
     }
     mK[i] = !pointBefore ? deltaK[i]
       : !pointAfter ? deltaK[i - 1]
@@ -1899,7 +1921,7 @@ function splineCurveMonotone(points) {
       : (deltaK[i - 1] + deltaK[i]) / 2;
   }
   monotoneAdjust(points, deltaK, mK);
-  monotoneCompute(points, mK);
+  monotoneCompute(points, mK, indexAxis);
 }
 function capControlPoint(pt, min, max) {
   return Math.max(Math.min(pt, max), min);
@@ -1925,13 +1947,13 @@ function capBezierPoints(points, area) {
     }
   }
 }
-function _updateBezierControlPoints(points, options, area, loop) {
+function _updateBezierControlPoints(points, options, area, loop, indexAxis) {
   let i, ilen, point, controlPoints;
   if (options.spanGaps) {
     points = points.filter((pt) => !pt.skip);
   }
   if (options.cubicInterpolationMode === 'monotone') {
-    splineCurveMonotone(points);
+    splineCurveMonotone(points, indexAxis);
   } else {
     let prev = loop ? points[points.length - 1] : points[0];
     for (i = 0, ilen = points.length; i < ilen; ++i) {
@@ -2079,15 +2101,26 @@ function getMaximumSize(canvas, bbWidth, bbHeight, aspectRatio) {
   };
 }
 function retinaScale(chart, forceRatio, forceStyle) {
-  const pixelRatio = chart.currentDevicePixelRatio = forceRatio || 1;
-  const {canvas, width, height} = chart;
-  canvas.height = height * pixelRatio;
-  canvas.width = width * pixelRatio;
-  chart.ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+  const pixelRatio = forceRatio || 1;
+  const deviceHeight = Math.floor(chart.height * pixelRatio);
+  const deviceWidth = Math.floor(chart.width * pixelRatio);
+  chart.height = deviceHeight / pixelRatio;
+  chart.width = deviceWidth / pixelRatio;
+  const canvas = chart.canvas;
   if (canvas.style && (forceStyle || (!canvas.style.height && !canvas.style.width))) {
-    canvas.style.height = height + 'px';
-    canvas.style.width = width + 'px';
+    canvas.style.height = `${chart.height}px`;
+    canvas.style.width = `${chart.width}px`;
   }
+  if (chart.currentDevicePixelRatio !== pixelRatio
+      || canvas.height !== deviceHeight
+      || canvas.width !== deviceWidth) {
+    chart.currentDevicePixelRatio = pixelRatio;
+    canvas.height = deviceHeight;
+    canvas.width = deviceWidth;
+    chart.ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    return true;
+  }
+  return false;
 }
 const supportsEventListenerOptions = (function() {
   let passiveSupported = false;
@@ -2280,6 +2313,9 @@ function _boundSegment(segment, points, bounds) {
       continue;
     }
     value = normalize(point[property]);
+    if (value === prevValue) {
+      continue;
+    }
     inside = between(value, startBound, endBound);
     if (subStart === null && shouldStart()) {
       subStart = compare(value, startBound) === 0 ? i : prev;
@@ -2418,4 +2454,4 @@ function styleChanged(style, prevStyle) {
   return prevStyle && JSON.stringify(style) !== JSON.stringify(prevStyle);
 }
 
-export { merge as $, _isPointInArea as A, _rlookupByKey as B, toPadding as C, each as D, getMaximumSize as E, _getParentNode as F, readUsedSize as G, HALF_PI as H, throttled as I, supportsEventListenerOptions as J, log10 as K, _factorize as L, finiteOrDefault as M, callback as N, _addGrace as O, PI as P, toDegrees as Q, _measureText as R, _int16Range as S, TAU as T, _alignPixel as U, renderText as V, toFont as W, _toLeftRightCenter as X, _alignStartEnd as Y, overrides as Z, _arrayUnique as _, resolve as a, _capitalize as a0, descriptors as a1, isFunction as a2, _attachContext as a3, _createResolver as a4, _descriptors as a5, mergeIf as a6, uid as a7, debounce as a8, retinaScale as a9, almostWhole as aA, almostEquals as aB, _decimalPlaces as aC, _longestText as aD, _filterBetween as aE, _lookup as aF, getHoverColor as aG, clone$1 as aH, _merger as aI, _mergerIf as aJ, _deprecated as aK, toFontString as aL, splineCurve as aM, splineCurveMonotone as aN, getStyle as aO, fontString as aP, toLineHeight as aQ, PITAU as aR, INFINITY as aS, RAD_PER_DEG as aT, QUARTER_PI as aU, TWO_THIRDS_PI as aV, _angleDiff as aW, clearCanvas as aa, _elementsEqual as ab, getAngleFromPoint as ac, _readValueToProps as ad, _updateBezierControlPoints as ae, _computeSegments as af, _boundSegments as ag, _steppedInterpolation as ah, _bezierInterpolation as ai, _pointInLine as aj, _steppedLineTo as ak, _bezierCurveTo as al, drawPoint as am, addRoundedRectPath as an, toTRBL as ao, toTRBLCorners as ap, _boundSegment as aq, _normalizeAngle as ar, getRtlAdapter as as, overrideTextDirection as at, _textX as au, restoreTextDirection as av, noop as aw, distanceBetweenPoints as ax, _setMinAndMaxByKey as ay, niceNum as az, isArray as b, color as c, defaults as d, effects as e, resolveObjectKey as f, isNumberFinite as g, defined as h, isObject as i, isNullOrUndef as j, clipArea as k, listenArrayEvents as l, unclipArea as m, toPercentage as n, toDimension as o, formatNumber as p, _angleBetween as q, requestAnimFrame as r, sign as s, toRadians as t, unlistenArrayEvents as u, valueOrDefault as v, isNumber as w, _limitValue as x, _lookupByKey as y, getRelativePosition as z };
+export { merge as $, _isPointInArea as A, _rlookupByKey as B, toPadding as C, each as D, getMaximumSize as E, _getParentNode as F, readUsedSize as G, HALF_PI as H, throttled as I, supportsEventListenerOptions as J, log10 as K, _factorize as L, finiteOrDefault as M, callback as N, _addGrace as O, PI as P, toDegrees as Q, _measureText as R, _int16Range as S, TAU as T, _alignPixel as U, renderText as V, toFont as W, _toLeftRightCenter as X, _alignStartEnd as Y, overrides as Z, _arrayUnique as _, resolve as a, _capitalize as a0, descriptors as a1, isFunction as a2, _attachContext as a3, _createResolver as a4, _descriptors as a5, mergeIf as a6, uid as a7, debounce as a8, retinaScale as a9, niceNum as aA, almostWhole as aB, almostEquals as aC, _decimalPlaces as aD, _longestText as aE, _filterBetween as aF, _lookup as aG, getHoverColor as aH, clone$1 as aI, _merger as aJ, _mergerIf as aK, _deprecated as aL, toFontString as aM, splineCurve as aN, splineCurveMonotone as aO, getStyle as aP, fontString as aQ, toLineHeight as aR, PITAU as aS, INFINITY as aT, RAD_PER_DEG as aU, QUARTER_PI as aV, TWO_THIRDS_PI as aW, _angleDiff as aX, clearCanvas as aa, setsEqual as ab, _elementsEqual as ac, getAngleFromPoint as ad, _readValueToProps as ae, _updateBezierControlPoints as af, _computeSegments as ag, _boundSegments as ah, _steppedInterpolation as ai, _bezierInterpolation as aj, _pointInLine as ak, _steppedLineTo as al, _bezierCurveTo as am, drawPoint as an, addRoundedRectPath as ao, toTRBL as ap, toTRBLCorners as aq, _boundSegment as ar, _normalizeAngle as as, getRtlAdapter as at, overrideTextDirection as au, _textX as av, restoreTextDirection as aw, noop as ax, distanceBetweenPoints as ay, _setMinAndMaxByKey as az, isArray as b, color as c, defaults as d, effects as e, resolveObjectKey as f, isNumberFinite as g, defined as h, isObject as i, isNullOrUndef as j, clipArea as k, listenArrayEvents as l, unclipArea as m, toPercentage as n, toDimension as o, formatNumber as p, _angleBetween as q, requestAnimFrame as r, sign as s, toRadians as t, unlistenArrayEvents as u, valueOrDefault as v, isNumber as w, _limitValue as x, _lookupByKey as y, getRelativePosition as z };
