@@ -819,7 +819,8 @@ Renderer.prototype.heading = function(text, level, raw) {
     + level
     + ' id="'
     + this.options.headerPrefix
-    + raw.toLowerCase().replace(/[^\w]+/g, '-')
+    // + raw.toLowerCase().replace(/[^\w]+/g, '-')
+    + encodeURIComponent(raw)
     + '">'
     + text
     + '</h'
@@ -994,7 +995,11 @@ Parser.prototype.toc = function () {
   headings.forEach(function (h) {
     
     
-    toc.push('<li class="depth' + h.depth + '"><a href="#' + opt.headerPrefix + h.text.toLowerCase().replace(/[^\w]+/g, '-') + '">' + h.text + '</a></li>');
+    toc.push('<li class="depth' + h.depth + '"><a href="#' 
+    + opt.headerPrefix 
+    // + h.text.toLowerCase().replace(/[^\w]+/g, '-') 
+    + encodeURIComponent(h.text)
+    + '">' + h.text + '</a></li>');
   });
   toc.push('</ul>');
   return toc.join('');

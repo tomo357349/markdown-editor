@@ -14,11 +14,14 @@ some codes...
 	margin-bottom:-5px;
 }
 
-body, div, span, li, p, td, pre, code, blockquote {
+body {
 	font-size: 16px;
 	line-height: 1.5;
 	font-family: "ヒラギノ明朝 ProN W3", "ヒラギノ明朝 ProN", "Hiragino Mincho ProN", serif;
 	font-weight: 300;
+}
+
+body, div, span, li, p, td, pre, code, blockquote {
 }
 div.reset, .reset span, .reset li, .reset p, .reset td, .reset pre, .reset code {
 	font-size: initial;
@@ -51,6 +54,11 @@ h1, h2, h3, h4 {
 
 h1:first-child {
 	margin-top: 0;
+}
+
+strong {
+	font-weight: bold;
+	background-color: #ffc;
 }
 
 code {
@@ -465,6 +473,10 @@ img {
 .reset img {
 	max-width: revert;
 	min-width: revert;
+}
+
+.katex-mathml {
+	display: none;
 }
 
 h1 {

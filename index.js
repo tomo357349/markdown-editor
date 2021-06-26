@@ -39,7 +39,7 @@ ngapp.controller('MainController', ['$scope', '$sce', '$timeout', function ($sco
 		toc: true,
 		todo: true,
 		vw: 5,
-		md: '# markdown text\n## link\n[google](http://www.google.com)\n\n## todo\n- xxx\n+ yyy\n\n## table\n|id|name|\n|-:|----|\n|1|Taro|\n\n## blockquote\n> Note: aaa\n\n## code\n```js\nvar x = 0;\nconsole.log(x);\n```\n\n## uml\nflowchart\n```uml\ngraph LR\nA[Start] --> B{Decision}\nB -->|false| C[/Execute/]\nB -->|true| D[/Stop/]\n```\n\n```uml\ngraph TB\nStart --> Stop\n```\nclass diagram\n```uml\nclassDiagram\nclassA <|-- classB : implements\nclassC *-- classD : composition\nclassE o-- classF : association\nCustomer "1" --> "*" Ticket\n```\n\nsequence diagram\n```uml\nsequenceDiagram\nAlice->>+John: Hello John, how are you?\nJohn-->>-Alice: Great!\n```\n\nstate diagram\n```uml\nstateDiagram\n[*] --> s1\ns1 --> s2: A transition\ns2 --> [*]\n```\n\n```uml\ngantt\ntitle A Gantt Diagram\ndateFormat YYYY-MM-DD\nsection Section\nA task:done, a1, 2020-01-01, 30d\nAnother task:after a1, 20d\nsection Section2\nTask in sec:crit, s2t1, 2020-01-12, 12d\nsecond task:active, 24d\nclick s2t1 call printTask("x")```\n\n```uml\nerDiagram\nCUSTOMER ||--o{ ORDER : places\nORDER ||--|{ LINE-ITEM : contains\nCUSTOMER }|..|{ DELIVERY-ADDRESS : uses```\n\n# flowchart\n\n```flow\nst=>start: START\ne=>end: END\nio1=>inputoutput: Stdin\ncond=>condition: isBlank?\nsub1=>subroutine: func1\nop1=>operation: i++\nst->io1->cond\ncond(yes)->sub1->e\ncond(no)->op1->e\n```\n\n# chart\n\n```chart\n{\n	"type": "bar",\n	"data": {\n		"labels": ["Red", "Blue"],\n		"datasets": [\n			{\n				"label": "# of Votes",\n				"data": [12, 3],\n				"backgroundColor": ["rgba(255, 99, 132, 0.2)","rgba(54, 162, 235, 0.2)"],\n				"borderColor": ["rgba(255, 99, 132, 1)","rgba(54, 162, 235, 1)"],\n				"borderWidth": 1\n			}\n		]\n	},\n	"options": {\n		"scales": {\n			"y": {"beginAtZero": true}\n		}\n	}\n}\n```\n\n```chart\n{\n	"type": "line",\n	"data": {\n		"labels": ["Jan", "Feb", "Mar", "Apr"],\n		"datasets": [\n			{\n				"label": "My First Dataset",\n				"data": [65, 59, 80, 81],\n				"fill": false,\n				"borderColor": "rgb(75, 192, 192)",\n				"tension": 0.1\n			}\n		]\n	}\n}\n```\n\n```chart\n{\n	"type": "doughnut",\n	"data": {\n		"labels": [\n			"Red",\n			"Blue",\n			"Yellow"\n		],\n		"datasets": [{\n			"label": "My First Dataset",\n			"data": [300, 50, 100],\n			"backgroundColor": [\n			"rgb(255, 99, 132)",\n			"rgb(54, 162, 235)",\n			"rgb(255, 205, 86)"\n			],\n			"hoverOffset": 4\n		}]\n	},\n    "options": {\n        "responsive": true,\n		"plugins": {\n			"legend": {\n				"position": "right"\n			},\n			"title": {\n				"display": true,\n				"text": "Doughnut Chart"\n			}\n		}\n	}\n}\n```\n\n# tree\n\n```tree\n{\n  "opts": {\n    "space": {\n      "pad": 20,\n      "w": 100,\n      "h": 30\n    },\n    "rect": {\n      "w": 80,\n      "h": 20\n    }\n  },\n  "data": {\n    "(root)": {\n      "opt": {},\n      "usr": {\n        "bin": {},\n        "lib@mark": {\n          "cron": {},\n          "zsh": {}\n        },\n        "local": {\n          "bin": {}\n        },\n        "sbin": {}\n      }\n    }\n  }\n}\n```\n\n<!--```latex\n\\sum_{i=1}^{n} x_i\n```-->\n\n',
+		md: '# markdown text\n## text\nLorem _ipsum_ __dolor__ ~~sit~~ **amet**, <u>consectetur</u> adipiscing elit, do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n\n## head 2\n### head 3\n#### head 4\n##### head 5\n\n## unordered list\n* aaa\n* bbbb\n\n## ordered list\n0. aaa\n0. bbbb\n\n## link\n[google](http://www.google.com)\n\n## todo\n- xxx\n+ yyy\n\n## table\n|id|name|\n|-:|----|\n|1|Taro|\n\n## blockquote\n> Note: aaa\n\n## code\n```js\nvar x = 0;\nconsole.log(x);\n```\n\n# math\n```math\nc = \\pm\\sqrt{a^2 + b^2}\n```\n\n<!--```latex\n\\sum_{i=1}^{n} x_i\nx=\frac{1} {2^n}\n```-->\n\n# uml\n## flowchart\n```uml\ngraph LR\nA[Start] --> B{Decision}\nB -->|false| C[/Execute/]\nB -->|true| D[/Stop/]\n```\n\n```uml\ngraph TB\nStart --> Stop\n```\n## class diagram\n```uml\nclassDiagram\nclassA <|-- classB : implements\nclassC *-- classD : composition\nclassE o-- classF : association\nCustomer "1" --> "*" Ticket\n```\n\n## sequence diagram\n```uml\nsequenceDiagram\nAlice->>+John: Hello John, how are you?\nJohn-->>-Alice: Great!\n```\n\n## state diagram\n```uml\nstateDiagram\n[*] --> s1\ns1 --> s2: A transition\ns2 --> [*]\n```\n\n## gantt\n```uml\ngantt\ntitle A Gantt Diagram\ndateFormat YYYY-MM-DD\nsection Section\nA task:done, a1, 2020-01-01, 30d\nAnother task:after a1, 20d\nsection Section2\nTask in sec:crit, s2t1, 2020-01-12, 12d\nsecond task:active, 24d\nclick s2t1 call printTask("x")```\n\n## ER\n```uml\nerDiagram\nCUSTOMER ||--o{ ORDER : places\nORDER ||--|{ LINE-ITEM : contains\nCUSTOMER }|..|{ DELIVERY-ADDRESS : uses```\n\n# flowchart\n\n```flow\nst=>start: START\ne=>end: END\nio1=>inputoutput: Stdin\ncond=>condition: isBlank?\nsub1=>subroutine: func1\nop1=>operation: i++\nst->io1->cond\ncond(yes)->sub1->e\ncond(no)->op1->e\n```\n\n# chart\n\n## bar chart\n```chart\n{\n	"type": "bar",\n	"data": {\n		"labels": ["Red", "Blue"],\n		"datasets": [\n			{\n				"label": "# of Votes",\n				"data": [12, 3],\n				"backgroundColor": ["rgba(255, 99, 132, 0.2)","rgba(54, 162, 235, 0.2)"],\n				"borderColor": ["rgba(255, 99, 132, 1)","rgba(54, 162, 235, 1)"],\n				"borderWidth": 1\n			}\n		]\n	},\n	"options": {\n		"scales": {\n			"y": {"beginAtZero": true}\n		}\n	}\n}\n```\n\n## line chart\n```chart\n{\n	"type": "line",\n	"data": {\n		"labels": ["Jan", "Feb", "Mar", "Apr"],\n		"datasets": [\n			{\n				"label": "My First Dataset",\n				"data": [65, 59, 80, 81],\n				"fill": false,\n				"borderColor": "rgb(75, 192, 192)",\n				"tension": 0.1\n			}\n		]\n	}\n}\n```\n\n## doughnut chart\n```chart\n{\n	"type": "doughnut",\n	"data": {\n		"labels": [\n			"Red",\n			"Blue",\n			"Yellow"\n		],\n		"datasets": [{\n			"label": "My First Dataset",\n			"data": [300, 50, 100],\n			"backgroundColor": [\n			"rgb(255, 99, 132)",\n			"rgb(54, 162, 235)",\n			"rgb(255, 205, 86)"\n			],\n			"hoverOffset": 4\n		}]\n	},\n    "options": {\n        "responsive": true,\n		"plugins": {\n			"legend": {\n				"position": "right"\n			},\n			"title": {\n				"display": true,\n				"text": "Doughnut Chart"\n			}\n		}\n	}\n}\n```\n\n# tree\n\n```tree\n{\n  "opts": {\n    "space": {\n      "pad": 20,\n      "w": 100,\n      "h": 30\n    },\n    "rect": {\n      "w": 80,\n      "h": 20\n    }\n  },\n  "data": {\n    "(root)": {\n      "opt": {},\n      "usr": {\n        "bin": {},\n        "lib@mark": {\n          "cron": {},\n          "zsh": {}\n        },\n        "local": {\n          "bin": {}\n        },\n        "sbin": {}\n      }\n    }\n  }\n}\n```\n\n',
 		images: [
 			dummyimg
 		],
@@ -61,9 +61,9 @@ ngapp.controller('MainController', ['$scope', '$sce', '$timeout', function ($sco
 		markedhtml = appendimage(markedhtml);
 		$scope.model.html = $sce.trustAsHtml(markedhtml);
 
-		setTimeout(function () {
-			LatexIT.render('code');
-		}, 100);
+		// setTimeout(function () {
+		// 	LatexIT.render('code');
+		// }, 100);
 
 		setTimeout(function () {
 			mermaid.init(undefined, ".lang-uml");
@@ -107,6 +107,18 @@ ngapp.controller('MainController', ['$scope', '$sce', '$timeout', function ($sco
 					'scale': 1.0,
 					"fill": "#fff"
 				});
+			});
+
+			document.querySelectorAll('.lang-math').forEach(function (el) {
+				var formula = el.innerText;
+				var html = katex.renderToString(formula, {
+					throwOnError: false
+				});
+				var box = document.createElement('div');
+				box.innerHTML = html;
+				var pre = el.parentNode;
+				var rootel = el.parentNode.parentNode;
+				rootel.replaceChild(box, pre);
 			});
 		}, 100);
 	};

@@ -8,8 +8,9 @@
 	<title>markdown editor</title>
 
 	<link rel="icon" type="image/x-icon" href="favicon.ico?v=0.1" />
-	<link rel="stylesheet" type="text/css" href="index.css?v=0.108" />
+	<link rel="stylesheet" type="text/css" href="index.css?v=0.110" />
 	<link rel="stylesheet" type="text/css" href="fa/css/all.css" />
+    <link rel="stylesheet" type="text/css" href="katex/katex.min.css" />
 	<style>
 		th, td {
 			min-width: 3em;
@@ -21,20 +22,20 @@
 		pre.csharp {
 			background: no-repeat top 14px right 6px/22px url('./img/csharp.png') #699;
 		}
-
 	</style>
 	<script src="./d3.min.js"></script>
-	<script src="./latexit.js"></script>
 	<!--<script src="./node_modules/angular/angular.min.js"></script>-->
-	<!--<script src="./node_modules/marked/lib/marked.js"></script>-->
 	<script src="./angular.min.js"></script>
+	<!--<script src="./node_modules/marked/lib/marked.js"></script>-->
 	<script src="./marked.js"></script>
-	<script src="./node_modules/mermaid/dist/mermaid.min.js"></script>
-	<!--<script src="./mermaid.min.js"></script>-->
+	<!--<script src="./node_modules/mermaid/dist/mermaid.min.js"></script>-->
+	<script src="./mermaid.min.js"></script>
 	<script src="./raphael.js"></script>
 	<script src="./flowchart.js"></script>
 	<script src="./chart/chart.js"></script>
 	<!--<script src="./chart/plugins/chartjs-plugin-labels.js"></script>-->
+	<!--<script src="./latexit.js"></script>-->
+    <script defer src="katex/katex.min.js"></script>
 </head>
 
 <body ng-app="example-app" ng-controller="MainController" class="main">
@@ -69,5 +70,5 @@
 		</div>
 	</div>
 </body>
-<script src="index.js?v=0.26"></script>
+<script src="index.js?v=0.27"></script>
 </html>
