@@ -5576,6 +5576,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
     var xlink = "http://www.w3.org/1999/xlink",
         markers = {
             block: "M5,0 0,2.5 5,5z",
+            //TODO: block: "M10,0 0,5 10,10z",
             classic: "M5,0 0,2.5 5,5 3.5,3 3.5,2z",
             diamond: "M2.5,0 5,2.5 2.5,5 0,2.5z",
             open: "M6,1 1,3.5 6,6",
@@ -5725,8 +5726,10 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                 dx,
                 refX,
                 attr,
-                w = 3,
-                h = 3,
+                // TODO: w = 3,
+                w = 7,
+                // TODO: h = 3,
+                h = 7,
                 t = 5;
             while (i--) {
                 switch (values[i]) {

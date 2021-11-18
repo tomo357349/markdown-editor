@@ -8,7 +8,7 @@
 	<title>markdown editor</title>
 
 	<link rel="icon" type="image/x-icon" href="favicon.ico?v=0.1" />
-	<link rel="stylesheet" type="text/css" href="index.css?v=0.110" />
+	<link rel="stylesheet" type="text/css" href="index.css?v=0.112" />
 	<link rel="stylesheet" type="text/css" href="fa/css/all.css" />
     <link rel="stylesheet" type="text/css" href="katex/katex.min.css" />
 	<style>
@@ -59,7 +59,7 @@
 		</div>
 
 		<button ng-click="htmlHidden=!htmlHidden">{{(htmlHidden)?'show':'hide'}} html</button>
-		<textarea ng-if="!htmlHidden" ng-model="model.html" cols="10" rows="3" style="flex: 2;" readonly></textarea>
+		<textarea ng-if="!htmlHidden" ng-model="model.doc" cols="10" rows="3" style="flex: 2;" readonly></textarea>
 		<!--<button ng-click="image()">image</button>-->
 	</div>
 	<div ng-hide="hiddenView" class="pane" id="text"
@@ -70,5 +70,5 @@
 		</div>
 	</div>
 </body>
-<script src="index.js?v=0.27"></script>
+<script src="index.js?v=0.28"></script>
 </html>

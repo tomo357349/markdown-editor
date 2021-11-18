@@ -17,8 +17,21 @@ some codes...
 body {
 	font-size: 16px;
 	line-height: 1.5;
-	font-family: "ヒラギノ明朝 ProN W3", "ヒラギノ明朝 ProN", "Hiragino Mincho ProN", serif;
-	font-weight: 300;
+}
+
+body, a, td {
+	/*font-family: "ヒラギノ明朝 ProN W3", "ヒラギノ明朝 ProN", "Hiragino Mincho ProN", serif;*/
+	/*font-family: "全児童フォント";*/
+	font-family: "UD デジタル 教科書体 N-R", "游教科書体 横用", "游教科書体", "serif";
+	/*font-weight: 300;*/
+}
+h1, h2, h3, h4, th, dt, button {
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", "Roboto", "Segoe UI", "BIZ UDゴシック", "游ゴシック体", sans-serif;
+	font-weight: 400;
+}
+code, textarea {
+	font-family: "Ricty Diminished", Ricty, Consolas, "Courier New", Courier, Monaco, monospace;
+	/*font-weight: 100;*/
 }
 
 body, div, span, li, p, td, pre, code, blockquote {
@@ -33,11 +46,10 @@ div.reset, .reset span, .reset li, .reset p, .reset td, .reset pre, .reset code 
 p::first-letter {
 	padding-left: 1em;
 }
-
-h1, h2, h3, h4, th, dt, button {
-	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", "Roboto", "Segoe UI", sans-serif;
-	font-weight: 400;
+li p::first-letter {
+	padding-left: 0;
 }
+
 .reset h1, .reset h2, .reset h3, .reset h4, .reset th, .reset dt, .reset button {
 	font-family: initial;
 	font-weight: initial;
@@ -62,9 +74,7 @@ strong {
 }
 
 code {
-	font-family: 'Ricty Diminished', Ricty, Consolas, 'Courier New', Courier, Monaco, monospace;
 	color: #366;
-	font-weight: 100;
 }
 .reset code {
 	font-family: initial;
@@ -73,7 +83,6 @@ code {
 }
 
 a {
-	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", "Roboto", "Segoe UI", sans-serif;
 	font-weight: 100;
 	color: #630;
 }
@@ -168,7 +177,7 @@ textarea {
 }
 .d3tree-node text {
 	fill: #000;
-	font-family: 'Ricty Diminished', Ricty, Consolas, 'Courier New', Courier, Monaco, monospace;
+	font-family: "Ricty Diminished", Ricty, Consolas, "Courier New", Courier, Monaco, monospace;
 }
 .d3tree-node.mark text {
 	fill: #600;
@@ -226,7 +235,7 @@ pre.javascript code.lang-javasceript::before {
 	right: 10px;
 }
 @font-face {
-  font-family: 'Font Awesome 5 Solid';
+  font-family: "Font Awesome 5 Solid";
   font-style: normal;
   font-weight: 900;
   font-display: block;
@@ -240,10 +249,10 @@ pre.bash code.lang-bash::before,
 pre.dir code.lang-dir::before,
 pre.db code.lang-db::before,
 pre.sql code.lang-sql::before {
-	font-family: 'Font Awesome 5 Solid';
+	font-family: "Font Awesome 5 Solid";
 }
 @font-face {
-  font-family: 'Font Awesome 5 Brands';
+  font-family: "Font Awesome 5 Brands";
   font-style: normal;
   font-weight: 400;
   font-display: block;
@@ -258,36 +267,36 @@ pre.html5 code.lang-html5::before,
 pre.css code.lang-css::before,
 pre.js code.lang-js::before,
 pre.javascript code.lang-javasceript::before {
-	font-family: 'Font Awesome 5 Brands';
+	font-family: "Font Awesome 5 Brands";
 }
 pre.code code.lang-code::before,
 pre.xml code.lang-xml::before,
 pre.html code.lang-html::before {
-	content: '\f121';
+	content: "\f121";
 }
 pre.terminal code.lang-terminal::before,
 pre.bash code.lang-bash::before {
-	content: '\f120';
+	content: "\f120";
 }
 pre.dir code.lang-dir::before {
-	content: '\f0e8';
+	content: "\f0e8";
 }
 pre.db code.lang-db::before,
 pre.sql code.lang-sql::before {
-	content: '\f1c0';
+	content: "\f1c0";
 }
 pre.java code.lang-java::before {
-	content: '\f4e4';
+	content: "\f4e4";
 }
 pre.html5 code.lang-html5::before {
-	content: '\f13b';
+	content: "\f13b";
 }
 pre.css code.lang-css::before {
-	content: '\f13c';
+	content: "\f13c";
 }
 pre.js code.lang-js::before,
 pre.javascript code.lang-javasceript::before {
-	content: '\f3b8';
+	content: "\f3b8";
 }
 pre.latex {
 	background-color: transparent;
@@ -332,6 +341,9 @@ p {
 	margin-top: revert;
 	margin-bottom: revert;
 }
+li p {
+	margin-top: 0;
+}
 
 h1 {
 	font-size: 2em;
@@ -370,6 +382,11 @@ ul {
 	-webkit-margin-end: 0;
 	-webkit-padding-start: 2em;
 }
+li ul,
+li ol {
+	-webkit-margin-before: .5em;
+	-webkit-margin-after: .5em;
+}
 .reset ol, .reset ul {
 	-webkit-margin-before: revert;
 	-webkit-margin-after: revert;
@@ -401,7 +418,7 @@ ul > li.todo::before {
 	left: -1em;
 	top: -0.5em;
 	font-size: 200%;
-	content: '\2610';
+	content: "\2610";
 }
 
 ul > li.done {
@@ -413,7 +430,7 @@ ul > li.done::before {
 	left: -1em;
 	top: -0.5em;
 	font-size: 200%;
-	content: '\2611';
+	content: "\2611";
 }
 
 ul.toc > li {
@@ -450,7 +467,7 @@ ul.toc > li.depth3 {
 }
 #imgs div,
 #imgs div a {
-	font-family: 'Ricty Diminished', Ricty, Consolas, 'Courier New', Courier, Monaco, monospace;
+	font-family: "Ricty Diminished", Ricty, Consolas, "Courier New", Courier, Monaco, monospace;
 }
 #imgs div a {
 	background-color: #999;
@@ -481,6 +498,20 @@ img {
 
 h1 {
 	page-break-before: always;
+}
+@media screen {
+	.html-container {
+		position: relative;
+		height: 100%;
+	}
+	h1 {
+		position: sticky;
+		top: -10px;
+		background-color: #fff;
+		white-space: nowrap;
+		overflow: hidden;
+		z-index: 100;
+	}
 }
 
 @media print {
