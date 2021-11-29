@@ -4,7 +4,7 @@
     "chart.js": "^3.3.2",
     "chartjs-plugin-labels": "^1.1.0",
     "d3": "^6.7.0",
-    "katex": "^0.13.11",
+    "katex": "^0.13.19",
     "latex.js": "^0.12.4",
     "marked": "^1.1.0",
     "mermaid": "^8.10.2"
