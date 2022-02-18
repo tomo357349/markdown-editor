@@ -428,9 +428,20 @@ Lexer.prototype.token = function(src, top, bq) {
 
     // top-level paragraph
     if (top && (cap = this.rules.paragraph.exec(src))) {
+      // CUSTOMIZE
+      var todo = cap[1].startsWith('TODO:') ? 'todo' 
+      : cap[1].startsWith('NOTE:') ? 'note'
+      : cap[1].startsWith('WARN:') ? 'warn'
+      : null;
+      if (todo) {
+        cap[1] = cap[1].substring(5);
+      }
+
       src = src.substring(cap[0].length);
       this.tokens.push({
         type: 'paragraph',
+        // CUSTOMIZE
+        todo: todo,
         text: cap[1].charAt(cap[1].length - 1) === '\n'
           ? cap[1].slice(0, -1)
           : cap[1]
@@ -845,8 +856,12 @@ Renderer.prototype.listitem = function(text, todo, done) {
   return '<li' + ((todo)? ' class="todo"': (done)? ' class="done"': '') + '>' + text + '</li>\n';
 };
 
-Renderer.prototype.paragraph = function(text) {
-  return '<p>' + text + '</p>\n';
+// CUSTOMIZE
+// Renderer.prototype.paragraph = function(text) {
+Renderer.prototype.paragraph = function(text, todo) {
+  // CUSTOMIZE
+  // return '<p>' + text + '</p>\n';
+  return (todo ? '<p class="' + todo + '">' : '<p>') + text + '</p>\n';
 };
 
 Renderer.prototype.table = function(header, body) {
@@ -1145,7 +1160,9 @@ Parser.prototype.tok = function() {
       return this.renderer.html(html);
     }
     case 'paragraph': {
-      return this.renderer.paragraph(this.inline.output(this.token.text));
+      // CUSTOMIZE
+      // return this.renderer.paragraph(this.inline.output(this.token.text));
+      return this.renderer.paragraph(this.inline.output(this.token.text), this.token.todo);
     }
     case 'text': {
       return this.renderer.paragraph(this.parseText());
