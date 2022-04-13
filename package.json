@@ -7,11 +7,11 @@
     "katex": "^0.13.19",
     "latex.js": "^0.12.4",
     "marked": "^1.1.0",
-    "mermaid": "^8.13.8"
+    "mermaid": "^9.0.0"
   },
   "devDependencies": {
     "@types/angular": "^1.7.1",
-    "@types/mermaid": "^8.2.1",
+    "@types/mermaid": "^8.2.9",
     "http-server": "^0.12.3"
   },
   "scripts": {
