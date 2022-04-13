@@ -1,16 +1,15 @@
 {
   "dependencies": {
     "angular": "^1.8.2",
-    "chart.js": "^3.3.2",
-    "chartjs-plugin-labels": "^1.1.0",
+    "chart.js": "^3.7.1",
     "d3": "^6.7.0",
-    "katex": "^0.13.19",
+    "katex": "^0.15.3",
     "latex.js": "^0.12.4",
     "marked": "^1.1.0",
     "mermaid": "^9.0.0"
   },
   "devDependencies": {
-    "@types/angular": "^1.7.1",
+    "@types/angular": "^1.8.4",
     "@types/mermaid": "^8.2.9",
     "http-server": "^0.12.3"
   },

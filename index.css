@@ -10,6 +10,7 @@ some codes...
 
 p.note, 
 p.todo, 
+p.refs, 
 p.warn {
 	border-style: solid;
 	border-width: 3px;
@@ -17,11 +18,13 @@ p.warn {
 }
 .note::first-letter, 
 .todo::first-letter, 
+.refs::first-letter, 
 .warn::first-letter {
 	padding-left: .3em;
 }
 p.note:before, 
 p.todo:before, 
+p.refs:before, 
 p.warn:before {
 	display: block;
 	color: #fff;
@@ -42,6 +45,10 @@ p.todo {
 p.todo::before {
 	content: 'TODO';
 	background-color: #c66;
+}
+p.refs {
+	border-color: #ccc;
+	color: #666;
 }
 p.warn {
 	border-color: #996;

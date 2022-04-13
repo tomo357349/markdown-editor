@@ -6,6 +6,7 @@
  * CUSTOMIZE
  * - can use todo(-) and done(+)
  * - output TOC
+ * - TODO, WARN, NOTE
  */
 
 ;(function() {
@@ -430,6 +431,7 @@ Lexer.prototype.token = function(src, top, bq) {
     if (top && (cap = this.rules.paragraph.exec(src))) {
       // CUSTOMIZE
       var todo = cap[1].startsWith('TODO:') ? 'todo' 
+      : cap[1].startsWith('REFS:') ? 'refs'
       : cap[1].startsWith('NOTE:') ? 'note'
       : cap[1].startsWith('WARN:') ? 'warn'
       : null;

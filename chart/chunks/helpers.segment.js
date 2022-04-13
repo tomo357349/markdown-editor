@@ -1,7 +1,7 @@
 /*!
- * Chart.js v3.3.2
+ * Chart.js v3.7.1
  * https://www.chartjs.org
- * (c) 2021 Chart.js Contributors
+ * (c) 2022 Chart.js Contributors
  * Released under the MIT License
  */
 function fontString(pixelSize, fontStyle, fontFamily) {
@@ -32,19 +32,22 @@ function throttled(fn, thisArg, updateFn) {
 }
 function debounce(fn, delay) {
   let timeout;
-  return function() {
+  return function(...args) {
     if (delay) {
       clearTimeout(timeout);
-      timeout = setTimeout(fn, delay);
+      timeout = setTimeout(fn, delay, args);
     } else {
-      fn();
+      fn.apply(this, args);
     }
     return delay;
   };
 }
 const _toLeftRightCenter = (align) => align === 'start' ? 'left' : align === 'end' ? 'right' : 'center';
 const _alignStartEnd = (align, start, end) => align === 'start' ? start : align === 'end' ? end : (start + end) / 2;
-const _textX = (align, left, right) => align === 'right' ? right : align === 'center' ? (left + right) / 2 : left;
+const _textX = (align, left, right, rtl) => {
+  const check = rtl ? 'left' : 'right';
+  return align === check ? right : align === 'center' ? (left + right) / 2 : left;
+};
 
 function noop() {}
 const uid = (function() {
@@ -231,6 +234,9 @@ const setsEqual = (a, b) => {
   }
   return true;
 };
+function _isClickEvent(e) {
+  return e.type === 'mouseup' || e.type === 'click' || e.type === 'contextmenu';
+}
 
 const PI = Math.PI;
 const TAU = 2 * PI;
@@ -243,6 +249,8 @@ const TWO_THIRDS_PI = PI * 2 / 3;
 const log10 = Math.log10;
 const sign = Math.sign;
 function niceNum(range) {
+  const roundedRange = Math.round(range);
+  range = almostEquals(range, roundedRange, range / 1000) ? roundedRange : range;
   const niceRange = Math.pow(10, Math.floor(log10(range)));
   const fraction = range / niceRange;
   const niceFraction = fraction <= 1 ? 1 : fraction <= 2 ? 2 : fraction <= 5 ? 5 : 10;
@@ -340,6 +348,9 @@ function _limitValue(value, min, max) {
 }
 function _int16Range(value) {
   return _limitValue(value, -32768, 32767);
+}
+function _isBetween(value, start, end, epsilon = 1e-6) {
+  return value >= Math.min(start, end) - epsilon && value <= Math.max(start, end) + epsilon;
 }
 
 const atEdge = (t) => t === 0 || t === 1;
@@ -1050,6 +1061,7 @@ class Defaults {
     this.scale = undefined;
     this.scales = {};
     this.showLine = true;
+    this.drawActiveElementsOnTop = true;
     this.describe(_descriptors);
   }
   set(scope, values) {
@@ -1275,8 +1287,8 @@ function drawPoint(ctx, options, x, y) {
 }
 function _isPointInArea(point, area, margin) {
   margin = margin || 0.5;
-  return point && point.x > area.left - margin && point.x < area.right + margin &&
-		point.y > area.top - margin && point.y < area.bottom + margin;
+  return !area || (point && point.x > area.left - margin && point.x < area.right + margin &&
+		point.y > area.top - margin && point.y < area.bottom + margin);
 }
 function clipArea(ctx, area) {
   ctx.save();
@@ -1319,22 +1331,8 @@ function renderText(ctx, text, x, y, font, opts = {}) {
   const stroke = opts.strokeWidth > 0 && opts.strokeColor !== '';
   let i, line;
   ctx.save();
-  if (opts.translation) {
-    ctx.translate(opts.translation[0], opts.translation[1]);
-  }
-  if (!isNullOrUndef(opts.rotation)) {
-    ctx.rotate(opts.rotation);
-  }
   ctx.font = font.string;
-  if (opts.color) {
-    ctx.fillStyle = opts.color;
-  }
-  if (opts.textAlign) {
-    ctx.textAlign = opts.textAlign;
-  }
-  if (opts.textBaseline) {
-    ctx.textBaseline = opts.textBaseline;
-  }
+  setRenderOpts(ctx, opts);
   for (i = 0; i < lines.length; ++i) {
     line = lines[i];
     if (stroke) {
@@ -1347,23 +1345,43 @@ function renderText(ctx, text, x, y, font, opts = {}) {
       ctx.strokeText(line, x, y, opts.maxWidth);
     }
     ctx.fillText(line, x, y, opts.maxWidth);
-    if (opts.strikethrough || opts.underline) {
-      const metrics = ctx.measureText(line);
-      const left = x - metrics.actualBoundingBoxLeft;
-      const right = x + metrics.actualBoundingBoxRight;
-      const top = y - metrics.actualBoundingBoxAscent;
-      const bottom = y + metrics.actualBoundingBoxDescent;
-      const yDecoration = opts.strikethrough ? (top + bottom) / 2 : bottom;
-      ctx.strokeStyle = ctx.fillStyle;
-      ctx.beginPath();
-      ctx.lineWidth = opts.decorationWidth || 2;
-      ctx.moveTo(left, yDecoration);
-      ctx.lineTo(right, yDecoration);
-      ctx.stroke();
-    }
+    decorateText(ctx, x, y, line, opts);
     y += font.lineHeight;
   }
   ctx.restore();
+}
+function setRenderOpts(ctx, opts) {
+  if (opts.translation) {
+    ctx.translate(opts.translation[0], opts.translation[1]);
+  }
+  if (!isNullOrUndef(opts.rotation)) {
+    ctx.rotate(opts.rotation);
+  }
+  if (opts.color) {
+    ctx.fillStyle = opts.color;
+  }
+  if (opts.textAlign) {
+    ctx.textAlign = opts.textAlign;
+  }
+  if (opts.textBaseline) {
+    ctx.textBaseline = opts.textBaseline;
+  }
+}
+function decorateText(ctx, x, y, line, opts) {
+  if (opts.strikethrough || opts.underline) {
+    const metrics = ctx.measureText(line);
+    const left = x - metrics.actualBoundingBoxLeft;
+    const right = x + metrics.actualBoundingBoxRight;
+    const top = y - metrics.actualBoundingBoxAscent;
+    const bottom = y + metrics.actualBoundingBoxDescent;
+    const yDecoration = opts.strikethrough ? (top + bottom) / 2 : bottom;
+    ctx.strokeStyle = ctx.fillStyle;
+    ctx.beginPath();
+    ctx.lineWidth = opts.decorationWidth || 2;
+    ctx.moveTo(left, yDecoration);
+    ctx.lineTo(right, yDecoration);
+    ctx.stroke();
+  }
 }
 function addRoundedRectPath(ctx, rect) {
   const {x, y, w, h, radius} = rect;
@@ -1468,12 +1486,17 @@ function resolve(inputs, context, index, info) {
     }
   }
 }
-function _addGrace(minmax, grace) {
+function _addGrace(minmax, grace, beginAtZero) {
   const {min, max} = minmax;
+  const change = toDimension(grace, (max - min) / 2);
+  const keepZero = (value, add) => beginAtZero && value === 0 ? 0 : value + add;
   return {
-    min: min - Math.abs(toDimension(grace, min)),
-    max: max + toDimension(grace, max)
+    min: keepZero(min, -Math.abs(change)),
+    max: keepZero(max, change)
   };
+}
+function createContext(parentContext, context) {
+  return Object.assign(Object.create(parentContext), context);
 }
 
 function _lookup(table, value, cmp) {
@@ -1566,11 +1589,7 @@ function _arrayUnique(items) {
   if (set.size === ilen) {
     return items;
   }
-  const result = [];
-  set.forEach(item => {
-    result.push(item);
-  });
-  return result;
+  return Array.from(set);
 }
 
 function _createResolver(scopes, prefixes = [''], rootScopes = scopes, fallback, getTarget = () => scopes[0]) {
@@ -1611,8 +1630,7 @@ function _createResolver(scopes, prefixes = [''], rootScopes = scopes, fallback,
     },
     set(target, prop, value) {
       const storage = target._storage || (target._storage = getTarget());
-      storage[prop] = value;
-      delete target[prop];
+      target[prop] = storage[prop] = value;
       delete target._keys;
       return true;
     }
@@ -1671,16 +1689,14 @@ function _descriptors(proxy, defaults = {scriptable: true, indexable: true}) {
   };
 }
 const readKey = (prefix, name) => prefix ? prefix + _capitalize(name) : name;
-const needsSubResolver = (prop, value) => isObject(value) && prop !== 'adapters';
+const needsSubResolver = (prop, value) => isObject(value) && prop !== 'adapters' &&
+  (Object.getPrototypeOf(value) === null || value.constructor === Object);
 function _cached(target, prop, resolve) {
-  let value = target[prop];
-  if (defined(value)) {
-    return value;
+  if (Object.prototype.hasOwnProperty.call(target, prop)) {
+    return target[prop];
   }
-  value = resolve();
-  if (defined(value)) {
-    target[prop] = value;
-  }
+  const value = resolve();
+  target[prop] = value;
   return value;
 }
 function _resolveWithContext(target, prop, receiver) {
@@ -1700,12 +1716,12 @@ function _resolveWithContext(target, prop, receiver) {
 function _resolveScriptable(prop, value, target, receiver) {
   const {_proxy, _context, _subProxy, _stack} = target;
   if (_stack.has(prop)) {
-    throw new Error('Recursion detected: ' + [..._stack].join('->') + '->' + prop);
+    throw new Error('Recursion detected: ' + Array.from(_stack).join('->') + '->' + prop);
   }
   _stack.add(prop);
   value = value(_context, _subProxy || receiver);
   _stack.delete(prop);
-  if (isObject(value)) {
+  if (needsSubResolver(prop, value)) {
     value = createSubResolver(_proxy._scopes, _proxy, prop, value);
   }
   return value;
@@ -1730,12 +1746,12 @@ function resolveFallback(fallback, prop, value) {
 }
 const getScope = (key, parent) => key === true ? parent
   : typeof key === 'string' ? resolveObjectKey(parent, key) : undefined;
-function addScopes(set, parentScopes, key, parentFallback) {
+function addScopes(set, parentScopes, key, parentFallback, value) {
   for (const parent of parentScopes) {
     const scope = getScope(key, parent);
     if (scope) {
       set.add(scope);
-      const fallback = resolveFallback(scope._fallback, key, scope);
+      const fallback = resolveFallback(scope._fallback, key, value);
       if (defined(fallback) && fallback !== key && fallback !== parentFallback) {
         return fallback;
       }
@@ -1751,22 +1767,22 @@ function createSubResolver(parentScopes, resolver, prop, value) {
   const allScopes = [...parentScopes, ...rootScopes];
   const set = new Set();
   set.add(value);
-  let key = addScopesFromKey(set, allScopes, prop, fallback || prop);
+  let key = addScopesFromKey(set, allScopes, prop, fallback || prop, value);
   if (key === null) {
     return false;
   }
   if (defined(fallback) && fallback !== prop) {
-    key = addScopesFromKey(set, allScopes, fallback, key);
+    key = addScopesFromKey(set, allScopes, fallback, key, value);
     if (key === null) {
       return false;
     }
   }
-  return _createResolver([...set], [''], rootScopes, fallback,
+  return _createResolver(Array.from(set), [''], rootScopes, fallback,
     () => subGetTarget(resolver, prop, value));
 }
-function addScopesFromKey(set, allScopes, key, fallback) {
+function addScopesFromKey(set, allScopes, key, fallback, item) {
   while (key) {
-    key = addScopes(set, allScopes, key, fallback);
+    key = addScopes(set, allScopes, key, fallback, item);
   }
   return key;
 }
@@ -1817,7 +1833,7 @@ function resolveKeysFromAllScopes(scopes) {
       set.add(key);
     }
   }
-  return [...set];
+  return Array.from(set);
 }
 
 const EPSILON = Number.EPSILON || 1e-14;
@@ -1976,6 +1992,9 @@ function _updateBezierControlPoints(points, options, area, loop, indexAxis) {
   }
 }
 
+function _isDomSupported() {
+  return typeof window !== 'undefined' && typeof document !== 'undefined';
+}
 function _getParentNode(domNode) {
   let parent = domNode.parentNode;
   if (parent && parent.toString() === '[object ShadowRoot]') {
@@ -2254,7 +2273,7 @@ function propertyFn(property) {
     };
   }
   return {
-    between: (n, s, e) => n >= Math.min(s, e) && n <= Math.max(e, s),
+    between: _isBetween,
     compare: (a, b) => a - b,
     normalize: x => x
   };
@@ -2401,40 +2420,67 @@ function _computeSegments(line, segmentOptions) {
   const loop = !!line._loop;
   const {start, end} = findStartAndEnd(points, count, loop, spanGaps);
   if (spanGaps === true) {
-    return splitByStyles([{start, end, loop}], points, segmentOptions);
+    return splitByStyles(line, [{start, end, loop}], points, segmentOptions);
   }
   const max = end < start ? end + count : end;
   const completeLoop = !!line._fullLoop && start === 0 && end === count - 1;
-  return splitByStyles(solidSegments(points, start, max, completeLoop), points, segmentOptions);
+  return splitByStyles(line, solidSegments(points, start, max, completeLoop), points, segmentOptions);
 }
-function splitByStyles(segments, points, segmentOptions) {
+function splitByStyles(line, segments, points, segmentOptions) {
   if (!segmentOptions || !segmentOptions.setContext || !points) {
     return segments;
   }
-  return doSplitByStyles(segments, points, segmentOptions);
+  return doSplitByStyles(line, segments, points, segmentOptions);
 }
-function doSplitByStyles(segments, points, segmentOptions) {
+function doSplitByStyles(line, segments, points, segmentOptions) {
+  const chartContext = line._chart.getContext();
+  const baseStyle = readStyle(line.options);
+  const {_datasetIndex: datasetIndex, options: {spanGaps}} = line;
   const count = points.length;
   const result = [];
+  let prevStyle = baseStyle;
   let start = segments[0].start;
   let i = start;
+  function addStyle(s, e, l, st) {
+    const dir = spanGaps ? -1 : 1;
+    if (s === e) {
+      return;
+    }
+    s += count;
+    while (points[s % count].skip) {
+      s -= dir;
+    }
+    while (points[e % count].skip) {
+      e += dir;
+    }
+    if (s % count !== e % count) {
+      result.push({start: s % count, end: e % count, loop: l, style: st});
+      prevStyle = st;
+      start = e % count;
+    }
+  }
   for (const segment of segments) {
-    let prevStyle, style;
+    start = spanGaps ? start : segment.start;
     let prev = points[start % count];
+    let style;
     for (i = start + 1; i <= segment.end; i++) {
       const pt = points[i % count];
-      style = readStyle(segmentOptions.setContext({type: 'segment', p0: prev, p1: pt}));
+      style = readStyle(segmentOptions.setContext(createContext(chartContext, {
+        type: 'segment',
+        p0: prev,
+        p1: pt,
+        p0DataIndex: (i - 1) % count,
+        p1DataIndex: i % count,
+        datasetIndex
+      })));
       if (styleChanged(style, prevStyle)) {
-        result.push({start: start, end: i - 1, loop: segment.loop, style: prevStyle});
-        prevStyle = style;
-        start = i - 1;
+        addStyle(start, i - 1, segment.loop, prevStyle);
       }
       prev = pt;
       prevStyle = style;
     }
     if (start < i - 1) {
-      result.push({start, end: i - 1, loop: segment.loop, style});
-      start = i - 1;
+      addStyle(start, i - 1, segment.loop, prevStyle);
     }
   }
   return result;
@@ -2454,4 +2500,4 @@ function styleChanged(style, prevStyle) {
   return prevStyle && JSON.stringify(style) !== JSON.stringify(prevStyle);
 }
 
-export { merge as $, _isPointInArea as A, _rlookupByKey as B, toPadding as C, each as D, getMaximumSize as E, _getParentNode as F, readUsedSize as G, HALF_PI as H, throttled as I, supportsEventListenerOptions as J, log10 as K, _factorize as L, finiteOrDefault as M, callback as N, _addGrace as O, PI as P, toDegrees as Q, _measureText as R, _int16Range as S, TAU as T, _alignPixel as U, renderText as V, toFont as W, _toLeftRightCenter as X, _alignStartEnd as Y, overrides as Z, _arrayUnique as _, resolve as a, _capitalize as a0, descriptors as a1, isFunction as a2, _attachContext as a3, _createResolver as a4, _descriptors as a5, mergeIf as a6, uid as a7, debounce as a8, retinaScale as a9, niceNum as aA, almostWhole as aB, almostEquals as aC, _decimalPlaces as aD, _longestText as aE, _filterBetween as aF, _lookup as aG, getHoverColor as aH, clone$1 as aI, _merger as aJ, _mergerIf as aK, _deprecated as aL, toFontString as aM, splineCurve as aN, splineCurveMonotone as aO, getStyle as aP, fontString as aQ, toLineHeight as aR, PITAU as aS, INFINITY as aT, RAD_PER_DEG as aU, QUARTER_PI as aV, TWO_THIRDS_PI as aW, _angleDiff as aX, clearCanvas as aa, setsEqual as ab, _elementsEqual as ac, getAngleFromPoint as ad, _readValueToProps as ae, _updateBezierControlPoints as af, _computeSegments as ag, _boundSegments as ah, _steppedInterpolation as ai, _bezierInterpolation as aj, _pointInLine as ak, _steppedLineTo as al, _bezierCurveTo as am, drawPoint as an, addRoundedRectPath as ao, toTRBL as ap, toTRBLCorners as aq, _boundSegment as ar, _normalizeAngle as as, getRtlAdapter as at, overrideTextDirection as au, _textX as av, restoreTextDirection as aw, noop as ax, distanceBetweenPoints as ay, _setMinAndMaxByKey as az, isArray as b, color as c, defaults as d, effects as e, resolveObjectKey as f, isNumberFinite as g, defined as h, isObject as i, isNullOrUndef as j, clipArea as k, listenArrayEvents as l, unclipArea as m, toPercentage as n, toDimension as o, formatNumber as p, _angleBetween as q, requestAnimFrame as r, sign as s, toRadians as t, unlistenArrayEvents as u, valueOrDefault as v, isNumber as w, _limitValue as x, _lookupByKey as y, getRelativePosition as z };
+export { _toLeftRightCenter as $, _rlookupByKey as A, getAngleFromPoint as B, toPadding as C, each as D, getMaximumSize as E, _getParentNode as F, readUsedSize as G, HALF_PI as H, throttled as I, supportsEventListenerOptions as J, _isDomSupported as K, log10 as L, _factorize as M, finiteOrDefault as N, callback as O, PI as P, _addGrace as Q, toDegrees as R, _measureText as S, TAU as T, _int16Range as U, _alignPixel as V, clipArea as W, renderText as X, unclipArea as Y, toFont as Z, _arrayUnique as _, resolve as a, _angleDiff as a$, _alignStartEnd as a0, overrides as a1, merge as a2, _capitalize as a3, descriptors as a4, isFunction as a5, _attachContext as a6, _createResolver as a7, _descriptors as a8, mergeIf as a9, restoreTextDirection as aA, noop as aB, distanceBetweenPoints as aC, _setMinAndMaxByKey as aD, niceNum as aE, almostWhole as aF, almostEquals as aG, _decimalPlaces as aH, _longestText as aI, _filterBetween as aJ, _lookup as aK, getHoverColor as aL, clone$1 as aM, _merger as aN, _mergerIf as aO, _deprecated as aP, toFontString as aQ, splineCurve as aR, splineCurveMonotone as aS, getStyle as aT, fontString as aU, toLineHeight as aV, PITAU as aW, INFINITY as aX, RAD_PER_DEG as aY, QUARTER_PI as aZ, TWO_THIRDS_PI as a_, uid as aa, debounce as ab, retinaScale as ac, clearCanvas as ad, setsEqual as ae, _elementsEqual as af, _isClickEvent as ag, _isBetween as ah, _readValueToProps as ai, _updateBezierControlPoints as aj, _computeSegments as ak, _boundSegments as al, _steppedInterpolation as am, _bezierInterpolation as an, _pointInLine as ao, _steppedLineTo as ap, _bezierCurveTo as aq, drawPoint as ar, addRoundedRectPath as as, toTRBL as at, toTRBLCorners as au, _boundSegment as av, _normalizeAngle as aw, getRtlAdapter as ax, overrideTextDirection as ay, _textX as az, isArray as b, color as c, defaults as d, effects as e, resolveObjectKey as f, isNumberFinite as g, createContext as h, isObject as i, defined as j, isNullOrUndef as k, listenArrayEvents as l, toPercentage as m, toDimension as n, formatNumber as o, _angleBetween as p, isNumber as q, requestAnimFrame as r, sign as s, toRadians as t, unlistenArrayEvents as u, valueOrDefault as v, _limitValue as w, _lookupByKey as x, getRelativePosition as y, _isPointInArea as z };
