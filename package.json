@@ -6,7 +6,7 @@
     "katex": "^0.15.3",
     "latex.js": "^0.12.4",
     "marked": "^1.1.0",
-    "mermaid": "^9.0.0"
+    "mermaid": "^9.1.2"
   },
   "devDependencies": {
     "@types/angular": "^1.8.4",
