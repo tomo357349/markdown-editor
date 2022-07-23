@@ -10,16 +10,16 @@ some codes...
 
 p.note, 
 p.todo, 
-p.refs, 
-p.warn {
+p.warn,
+p.refs {
 	border-style: solid;
 	border-width: 3px;
 	padding: .3em;
 }
-.note::first-letter, 
-.todo::first-letter, 
-.refs::first-letter, 
-.warn::first-letter {
+p.note::first-letter, 
+p.todo::first-letter, 
+p.refs::first-letter, 
+p.warn::first-letter {
 	padding-left: .3em;
 }
 p.note:before, 
@@ -38,11 +38,12 @@ p.note:before {
 	content: 'NOTE';
 	background-color: #ccc;
 }
+
 p.todo {
 	border-color: #c66;
 	color: #933;
 }
-p.todo::before {
+p.todo:before {
 	content: 'TODO';
 	background-color: #c66;
 }
@@ -245,6 +246,9 @@ pre {
 	background-color: revert;
 	padding: revert;
 	white-space: pre-wrap;
+}
+pre.chart {
+	background-color: transparent;
 }
 
 pre code {
@@ -566,6 +570,9 @@ h1 {
 }
 
 @media print {
+	body {
+		font-size: 16pt;
+	}
 	h1 {
 		margin-top: 0;
 		page-break-before: always;
@@ -578,6 +585,10 @@ h1 {
 	.main {
 		display: block;
 		position: relative;
+	}
+
+	img.breakable {
+		page-break-inside: auto;
 	}
 
 	#ctrl {
