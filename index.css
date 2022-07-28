@@ -570,9 +570,6 @@ h1 {
 }
 
 @media print {
-	body {
-		font-size: 16pt;
-	}
 	h1 {
 		margin-top: 0;
 		page-break-before: always;
