@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "angular": "^1.8.2",
+    "angular": "^1.8.3",
     "chart.js": "^3.7.1",
-    "d3": "^6.7.0",
+    "d3": "^7.6.1",
     "katex": "^0.15.3",
     "latex.js": "^0.12.4",
     "marked": "^1.1.0",
@@ -11,7 +11,7 @@
   "devDependencies": {
     "@types/angular": "^1.8.4",
     "@types/mermaid": "^8.2.9",
-    "http-server": "^0.12.3"
+    "http-server": "^14.1.1"
   },
   "scripts": {
     "start": "http-server"
