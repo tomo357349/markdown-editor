@@ -1,3 +1,5 @@
+var phoneMode = window.innerWidth < 480;
+
 mermaid.initialize({
 	startOnLoad: false,
 	theme: 'neutral', // forest, dark, neutral, default
@@ -22,7 +24,7 @@ mermaid.initialize({
 	},
 });
 mermaid.parseError = function (err, hash) {
-	displayErrorInGui(err);
+	console.error(err);
 };
 function printTask(name) {
 	console.log(name);
@@ -32,6 +34,8 @@ var ngapp = angular.module('example-app', []);
 ngapp.controller('MainController', ['$scope', '$sce', '$timeout', function ($scope, $sce, $timeout) {
 	var dummyimg = { name: '(drop an image file here)' };
 	$scope.htmlHidden = true;
+	$scope.hiddenText = false;
+	$scope.hiddenView = phoneMode;
 	$scope.model = {
 		toc: false,
 		todo: false,
@@ -43,6 +47,11 @@ ngapp.controller('MainController', ['$scope', '$sce', '$timeout', function ($sco
 		html: ''
 	};
 
+	$scope.$watch('hiddenView', function (value) {
+		if (value) return;
+		refleshView();
+	});
+
 	$scope.changeViewWidth = function () {
 		var i = $scope.model.vw * 10;
 		var s = i + '%';
@@ -51,103 +60,115 @@ ngapp.controller('MainController', ['$scope', '$sce', '$timeout', function ($sco
 		document.getElementById('ctrl').style.minWidth = t;
 	};
 	$scope.changed = function () {
+		if ($scope.hiddenView) return;
+		refleshView();
+	};
+	function refleshView() {
 		var toc = $scope.model.toc;
 		var todo = $scope.model.todo;
 		var md = $scope.model.md;
-		var markedhtml = marked(md, { toc, todo });
-		markedhtml = appendimage(markedhtml);
-		$scope.model.html = $sce.trustAsHtml(markedhtml);
-		// $scope.model.doc = $sce.trustAsHtml(htmlPrefix + markedhtml + htmlSuffix);
 
-		// setTimeout(function () {
-		// 	LatexIT.render('code');
-		// }, 100);
+		$scope.model.html = '';
 
-		setTimeout(function () {
-			mermaid.init(undefined, ".lang-uml");
+		$timeout(function () {
+			var markedhtml = marked(md, { toc, todo });
+			markedhtml = appendimage(markedhtml);
+			$scope.model.html = $sce.trustAsHtml(markedhtml);
+			// $scope.model.doc = $sce.trustAsHtml(htmlPrefix + markedhtml + htmlSuffix);
 
-			document.querySelectorAll('.lang-tree').forEach(function (el) {
-				try {
-					const pre = el.parentElement;
-					drawTree(pre, JSON.parse(el.innerText));
-				} catch (err) {
-					console.error(err);
-				}
-			});
-
-			document.querySelectorAll('.lang-chart').forEach(function (el) {
-				try {
-					var pre = el.parentElement;
-					chart(pre, JSON.parse(el.innerText));
-				} catch (err) {
-					console.error(err);
-				}
-				// var o = JSON.parse(el.innerText);
-				// var canvas = document.createElement('canvas');
-				// var pre = el.parentNode;
-				// var rootel = el.parentNode.parentNode;
-				// rootel.replaceChild(canvas, pre);
-				// var ctx = canvas.getContext('2d');
-
-				// var myChart = new Chart(ctx, o);
-			});
-
-			var flownum = 0;
-			document.querySelectorAll('.lang-flow').forEach(function (el) {
-				el.id = 'flow' + (flownum++);
-				var txt = el.innerText;
-				el.innerText = '';
-				var f = flowchart.parse(txt);
-				f.drawSVG(el.id, {
-					"line-width": 1,
-					'scale': 1.0,
-					"fill": "#fff"
-				});
-			});
-
-			document.querySelectorAll('code:not(.hljs)').forEach((el) => {
-				var src = el.innerText;
-				if (src.indexOf('tex$') === 0) {
-					src = src.substring('tex$'.length);
-					el.innerHTML = katex.renderToString(src, {
-						displayMode: false,
-						strict: false,
-						throwOnError: false
-					});
-				}
-			});
-			document.querySelectorAll('.lang-math').forEach(function (el) {
-				var formula = el.innerText;
-				// var html = katex.renderToString(formula, {
-				// 	throwOnError: false
-				// });
-				var box = document.createElement('div');
-				// box.innerHTML = html;
-				katex.render(formula, box, {
-					throwOnError: false
-				});
-				var pre = el.parentNode;
-				var rootel = el.parentNode.parentNode;
-				rootel.replaceChild(box, pre);
-			});
-
-			var nums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-			nums.forEach(function (n, i) {
-				document.querySelectorAll('.n' + i).forEach(function(el) {
-					if (el.classList.contains('reset')) n[i] = 0;
-					if (!el.classList.contains('peek')) nums[i]++;
-					el.innerText = nums[i];
-					el.classList.add('visible');
-				});
-			});
+			// setTimeout(function () {
+			// 	LatexIT.render('code');
+			// }, 100);
 
 			setTimeout(function () {
-				var ctx = document.querySelector('.html-container');
-				var markedhtml = ctx.children[0].innerHTML;
-				$scope.model.doc = $sce.trustAsHtml(htmlPrefix + markedhtml + htmlSuffix);
-			}, 3000);
-		}, 100);
-	};
+				mermaid.init(undefined, ".lang-uml");
+
+				document.querySelectorAll('.lang-tree').forEach(function (el) {
+					try {
+						const pre = el.parentElement;
+						drawTree(pre, JSON.parse(el.innerText));
+					} catch (err) {
+						console.error(err);
+					}
+				});
+
+				document.querySelectorAll('.lang-chart').forEach(function (el) {
+					try {
+						var pre = el.parentElement;
+						chart(pre, JSON.parse(el.innerText));
+					} catch (err) {
+						console.error(err);
+					}
+					// var o = JSON.parse(el.innerText);
+					// var canvas = document.createElement('canvas');
+					// var pre = el.parentNode;
+					// var rootel = el.parentNode.parentNode;
+					// rootel.replaceChild(canvas, pre);
+					// var ctx = canvas.getContext('2d');
+
+					// var myChart = new Chart(ctx, o);
+				});
+
+				var flownum = 0;
+				document.querySelectorAll('.lang-flow').forEach(function (el) {
+					el.id = 'flow' + (flownum++);
+					var txt = el.innerText;
+					el.innerText = '';
+					var f = flowchart.parse(txt);
+					f.drawSVG(el.id, {
+						"line-width": 1,
+						'scale': 1.0,
+						"fill": "#fff"
+					});
+				});
+
+				document.querySelectorAll('code:not(.hljs)').forEach((el) => {
+					var src = el.innerText;
+					if (src.indexOf('tex$') === 0) {
+						src = src.substring('tex$'.length);
+						el.innerHTML = katex.renderToString(src, {
+							displayMode: false,
+							strict: false,
+							throwOnError: false
+						});
+					}
+				});
+				document.querySelectorAll('.lang-math').forEach(function (el) {
+					var formula = el.innerText;
+					// var html = katex.renderToString(formula, {
+					// 	throwOnError: false
+					// });
+					var box = document.createElement('div');
+					// box.innerHTML = html;
+					katex.render(formula, box, {
+						throwOnError: false
+					});
+					var pre = el.parentNode;
+					var rootel = el.parentNode.parentNode;
+					rootel.replaceChild(box, pre);
+				});
+
+				var nums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				nums.forEach(function (n, i) {
+					document.querySelectorAll('.n' + i).forEach(function(el) {
+						if (el.classList.contains('reset')) n[i] = 0;
+						if (!el.classList.contains('peek')) nums[i]++;
+						el.innerText = nums[i];
+						el.classList.add('visible');
+					});
+				});
+
+				if (phoneMode) return;
+
+				setTimeout(function () {
+					var ctx = document.querySelector('.html-container');
+					var markedhtml = ctx.children[0].innerHTML;
+					$scope.model.doc = $sce.trustAsHtml(htmlPrefix + markedhtml + htmlSuffix);
+					console.log('generate html');
+				}, 3000);
+			}, 500);
+		});
+	}
 
 	$scope.loaded = function (res) {
 		res.sort(function (a, b) {

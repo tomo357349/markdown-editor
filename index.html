@@ -3,6 +3,7 @@
 
 <head>
 	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="format-detection" content="telephone=no, email=no, address=no">
 
 	<title>markdown editor</title>
@@ -22,6 +23,33 @@
 		pre.csharp {
 			background: no-repeat top 14px right 6px/22px url('./img/csharp.png') #699;
 		}
+		.toggle-view {
+			display: none;
+		}
+		@media (max-width:480px) {
+			#imgs {
+				display: none;
+			}
+			.show-html {
+				visibility: hidden;
+			}
+			.toggle-view {
+				display: block;
+				position: absolute;
+				bottom : 0;
+				left: 0;
+				right: 0;
+				z-index: 1000;
+
+				color: #fff;
+				opacity: .3;
+			}
+		}
+		@media print {
+			.toggle-view {
+				display: none;
+			}
+		}
 	</style>
 	<script src="./d3.min.js"></script>
 	<!--<script src="./node_modules/angular/angular.min.js"></script>-->
@@ -39,7 +67,7 @@
 </head>
 
 <body ng-app="example-app" ng-controller="MainController" class="main">
-	<div ng-hide="hiddenText" class="pane" id="ctrl">
+	<div ng-hide="hiddenText" class="pane edit-pane" id="ctrl">
 		<textarea ng-model="model.md" ng-model-options="{debounce: 800}" ng-change="changed()" cols="10" rows="3"
 			style="flex: 2;"
 			ondblclick="window.hiddenView=!window.hiddenView;document.getElementById('text').style='display:'+((hiddenView)?'none':'flex')+';';"></textarea>
@@ -58,17 +86,18 @@
 			<input type="text" id="clippedimg">
 		</div>
 
-		<button ng-click="htmlHidden=!htmlHidden">{{(htmlHidden)?'show':'hide'}} html</button>
+		<button class="show-html" ng-click="htmlHidden=!htmlHidden">{{(htmlHidden)?'show':'hide'}} html</button>
 		<textarea ng-if="!htmlHidden" ng-model="model.doc" cols="10" rows="3" style="flex: 2;" readonly></textarea>
 		<!--<button ng-click="image()">image</button>-->
 	</div>
-	<div ng-hide="hiddenView" class="pane" id="text"
+	<div ng-hide="hiddenView" class="pane view-pane" id="text"
 		ondblclick="window.hiddenText=!window.hiddenText;document.getElementById('ctrl').style='display:'+((hiddenText)?'none':'flex')+';';document.getElementById('text').style=(hiddenText)?'overflow-y: inherit;display:block;':'';">
 		<div class="html-container">
 			<div ng-bind-html="model.html"
 				style="padding: 10px; -webkit-flex: 1 1 auto; overflow-y: auto; min-height: 0px;"></div>
 		</div>
 	</div>
+	<button class="toggle-view" ng-style="{'background-color': hiddenView ? '#630' : '#036'}" ng-click="hiddenView=!hiddenView;hiddenText=!hiddenView">{{(hiddenView)?'editor':'viewer'}}</button>
 </body>
 <script src="index.js?v=0.28"></script>
 </html>
