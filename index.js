@@ -158,6 +158,8 @@ ngapp.controller('MainController', ['$scope', '$sce', '$timeout', function ($sco
 					});
 				});
 
+				hljs.highlightAll();
+
 				if (phoneMode) return;
 
 				setTimeout(function () {

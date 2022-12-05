@@ -235,7 +235,7 @@ textarea {
 	fill: #600;
 }
 
-pre {
+/*pre {
 	border-radius: 6px;
 	background-color: #699;
 	padding: 10px;
@@ -246,16 +246,20 @@ pre {
 	background-color: revert;
 	padding: revert;
 	white-space: pre-wrap;
-}
+}*/
 pre.chart {
 	background-color: transparent;
 }
 
-pre code {
+/*pre code {
 	color: #fff;
 }
 .reset pre code {
 	color: revert;
+}*/
+pre code.hljs {
+	border-radius: 6px;
+	white-space: pre-wrap;
 }
 
 pre.code,
@@ -266,6 +270,8 @@ pre.bash,
 pre.dir,
 pre.db,
 pre.sql,
+pre.python,
+pre.py,
 pre.java,
 pre.html5,
 pre.css,
@@ -281,6 +287,8 @@ pre.bash code.lang-bash::before,
 pre.dir code.lang-dir::before,
 pre.db code.lang-db::before,
 pre.sql code.lang-sql::before,
+pre.python code.lang-python::before,
+pre.py code.lang-py::before,
 pre.java code.lang-java::before,
 pre.html5 code.lang-html5::before,
 pre.css code.lang-css::before,
@@ -317,6 +325,8 @@ pre.uml,
 pre.flow {
 	background-color: transparent;
 }
+pre.py code.lang-py::before,
+pre.python code.lang-python::before,
 pre.java code.lang-java::before,
 pre.html5 code.lang-html5::before,
 pre.css code.lang-css::before,
@@ -339,6 +349,10 @@ pre.dir code.lang-dir::before {
 pre.db code.lang-db::before,
 pre.sql code.lang-sql::before {
 	content: "\f1c0";
+}
+pre.python code.lang-python::before,
+pre.py code.lang-py::before {
+	content: "\f3e2";
 }
 pre.java code.lang-java::before {
 	content: "\f4e4";
