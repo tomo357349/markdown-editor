@@ -141,6 +141,7 @@ ngapp.controller('MainController', ['$scope', '$sce', '$timeout', function ($sco
 					var box = document.createElement('div');
 					// box.innerHTML = html;
 					katex.render(formula, box, {
+						displayMode: true,
 						throwOnError: false
 					});
 					var pre = el.parentNode;
@@ -192,13 +193,28 @@ ngapp.controller('MainController', ['$scope', '$sce', '$timeout', function ($sco
 		return res.join('');
 
 		function recurse() {
+			var offset = 0;
 			var pos = html.indexOf('<img id="', lastpos);
+			if (pos >= 0) {
+				offset = 9;
+			} else {
+				pos = html.indexOf('<img src="', lastpos);
+				if (pos >= 0) {
+					offset = 10;
+				}
+			}
 			if (pos < 0) return;
-			var pos2 = html.indexOf('"', pos + 9);
+
+			var pos2 = html.indexOf('"', pos + offset);
 			if (pos2 < 0) return;
+
+			var id = html.substring(pos + offset, pos2);
+			var idpos = id.lastIndexOf('/');
+			if (idpos >= 0) {
+				id = id.substring(idpos + 1);
+			}
 			var pos3 = html.indexOf('>', pos2);
 			if (pos3 < 0) return;
-			var id = html.substring(pos + 9, pos2);
 			var img = imgs.find(function (d) {
 				return d.name === id;
 			});
@@ -509,15 +525,24 @@ ngapp.directive('dropFile', ['$timeout', function ($timeout) {
 		var line = d3.line()
 			.x(function (d) { return x(d[key]); })
 			.y(function (d) { return y(d[value]); });
-		svg.append("path")
-			.datum(data)
-			.attr('class', 'chart-line')
-			.attr("fill", "none")
-			.attr("stroke", "steelblue")
-			.attr("stroke-linejoin", "round")
-			.attr("stroke-linecap", "round")
-			.attr("stroke-width", 1.5)
-			.attr("d", line);
+		var domains = data.reduce(function (p, c) {
+			var d = c.domain || '';
+			if (p.indexOf(d) < 0) p.push(d);
+			return p;
+		}, []);
+		domains.forEach(function (domain, i) {
+			svg.append("path")
+				.datum(data.filter(function (d) {
+					return domain === (d.domain || '');
+				}))
+				.attr('class', 'chart-line')
+				.attr("fill", "none")
+				.attr("stroke", d3.schemeTableau10[i % 10])
+				.attr("stroke-linejoin", "round")
+				.attr("stroke-linecap", "round")
+				.attr("stroke-width", 1.5)
+				.attr("d", line);
+		});
 	}
 
 	// add the x Axis
