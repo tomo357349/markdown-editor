@@ -24,7 +24,7 @@ mermaid.initialize({
 	},
 });
 mermaid.parseError = function (err, hash) {
-	console.error(err);
+	console.error(err, hash);
 };
 function printTask(name) {
 	console.log(name);
@@ -67,6 +67,10 @@ ngapp.controller('MainController', ['$scope', '$sce', '$timeout', function ($sco
 		var toc = $scope.model.toc;
 		var todo = $scope.model.todo;
 		var md = $scope.model.md;
+		var prevScrollTop = (function () {
+			var scr = document.querySelector('.html-container .ng-binding');
+			return scr.scrollTop;
+		})();
 
 		$scope.model.html = '';
 
@@ -82,6 +86,17 @@ ngapp.controller('MainController', ['$scope', '$sce', '$timeout', function ($sco
 
 			setTimeout(function () {
 				mermaid.init(undefined, ".lang-uml");
+				// document.querySelectorAll('.lang-uml').forEach(function (el, i) {
+				// 	try {
+				// 		el.id = 'lang-uml-' + i;
+				// 		const pre = el.parentElement;
+				// 		mermaid.mermaidAPI.render(el.id, el.innerText, function (svgCode) {
+				// 			pre.innerHTML = svgCode;
+				// 		});
+				// 	} catch (err) {
+				// 		console.log(err);
+				// 	}
+				// });
 
 				document.querySelectorAll('.lang-tree').forEach(function (el) {
 					try {
@@ -133,6 +148,7 @@ ngapp.controller('MainController', ['$scope', '$sce', '$timeout', function ($sco
 						});
 					}
 				});
+
 				document.querySelectorAll('.lang-math').forEach(function (el) {
 					var formula = el.innerText;
 					// var html = katex.renderToString(formula, {
@@ -169,7 +185,17 @@ ngapp.controller('MainController', ['$scope', '$sce', '$timeout', function ($sco
 					$scope.model.doc = $sce.trustAsHtml(htmlPrefix + markedhtml + htmlSuffix);
 					console.log('generate html');
 				}, 3000);
-			}, 500);
+
+				setTimeout(function () {
+					var scr = document.querySelector('.html-container .ng-binding');
+					scr.scrollTop = prevScrollTop;
+				}, 100);
+			}, 100);
+
+			setTimeout(function () {
+				var scr = document.querySelector('.html-container .ng-binding');
+				scr.scrollTop = prevScrollTop;
+			});
 		});
 	}
 
@@ -204,7 +230,7 @@ ngapp.controller('MainController', ['$scope', '$sce', '$timeout', function ($sco
 				}
 			}
 			if (pos < 0) return;
-
+			
 			var pos2 = html.indexOf('"', pos + offset);
 			if (pos2 < 0) return;
 
@@ -413,7 +439,7 @@ ngapp.directive('dropFile', ['$timeout', function ($timeout) {
 	opts.margin.top = opts.margin.top || 10;
 	opts.margin.bottom = opts.margin.bottom || 10;
 	opts.scale = opts.scale || {};
-	opts.scale.x = opts.scale.x = opts.type === 'bar' ? 'band' : 'linear';
+	opts.scale.x = opts.scale.x || opts.type === 'bar' ? 'band' : 'linear';
 	opts.scale.y = opts.scale.y || {};
 	const data = opts.data || [];
 
@@ -421,6 +447,7 @@ ngapp.directive('dropFile', ['$timeout', function ($timeout) {
 		c.remove();
 	});
 
+	const colors = d3.schemeTableau10;
 	const defcolors = d3.schemeSpectral[(opts.domains.length < 3) ? 3 : opts.domains.length];
 	if (opts.type === 'donut') {
 		const chart = DonutChart(data, {
@@ -476,7 +503,6 @@ ngapp.directive('dropFile', ['$timeout', function ($timeout) {
 			title: (d, n) => `${n.ancestors().reverse().map(d => d.data.name).join(".")}`, // hover text
 			link: (d, n) => null, // `https://github.com/prefuse/Flare/${n.children ? "tree" : "blob"}/master/flare/src/${n.ancestors().reverse().map(d => d.data.name).join("/")}${n.children ? "" : ".as"}`,
 			width: opts.width
-		  
 		});
 		d3.select(el).node().appendChild(chart);
 		return;
@@ -523,7 +549,7 @@ ngapp.directive('dropFile', ['$timeout', function ($timeout) {
 	} else {
 		// append the paths for the line chart
 		var line = d3.line()
-			.x(function (d) { return x(d[key]); })
+			.x(function (d) { return x(d[key]) + (opts.scale.x === 'band' ? x.bandwidth() / 2 + x.paddingOuter() : 0); })
 			.y(function (d) { return y(d[value]); });
 		var domains = data.reduce(function (p, c) {
 			var d = c.domain || '';
@@ -532,16 +558,16 @@ ngapp.directive('dropFile', ['$timeout', function ($timeout) {
 		}, []);
 		domains.forEach(function (domain, i) {
 			svg.append("path")
-				.datum(data.filter(function (d) {
-					return domain === (d.domain || '');
-				}))
-				.attr('class', 'chart-line')
-				.attr("fill", "none")
-				.attr("stroke", d3.schemeTableau10[i % 10])
-				.attr("stroke-linejoin", "round")
-				.attr("stroke-linecap", "round")
-				.attr("stroke-width", 1.5)
-				.attr("d", line);
+			.datum(data.filter(function (d) {
+				return domain === (d.domain || '');
+			}))
+			.attr('class', 'chart-line')
+			.attr("fill", "none")
+			.attr("stroke", colors[i % 10])
+			.attr("stroke-linejoin", "round")
+			.attr("stroke-linecap", "round")
+			.attr("stroke-width", 1.5)
+			.attr("d", line);
 		});
 	}
 
