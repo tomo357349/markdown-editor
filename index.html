@@ -79,6 +79,7 @@
 				contents</label><br>
 			<input type="checkbox" id="todo" ng-model="model.todo" ng-change="changed()" /><label for="todo">use todo
 				list</label><br>
+			<input type="range" id="zoom" ng-model="model.zoom" ng-change="viewchanged()" min="0.2" max="5" step="0.1" /><label for="zoom">view zoom x{{ model.zoom }}</label><br>
 			</div>
 		<div id="imgs" drop-file="loaded" ng-model="model.img" style="flex: 1;max-height: 100px;overflow-y: auto;">
 			<div ng-repeat="img in model.images">
@@ -101,5 +102,5 @@
 	</div>
 	<button class="toggle-view" ng-style="{'background-color': hiddenView ? '#630' : '#036'}" ng-click="hiddenView=!hiddenView;hiddenText=!hiddenView">{{(hiddenView)?'editor':'viewer'}}</button>
 </body>
-<script src="index.js?v=0.29"></script>
+<script src="index.js?v=0.30"></script>
 </html>
